@@ -1,0 +1,1 @@
+import Link from 'next/link';import {templates} from '@/src/lib/content';export const metadata={title:'Templates and Checklists'};export default function Page(){return <main className="container stack"><h1>Templates and Checklists</h1>{templates.map(([h,t,d])=><Link className="card" href={h} key={h}><h2>{t}</h2><p>{d}</p></Link>)}</main>}

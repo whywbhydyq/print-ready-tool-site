@@ -1,0 +1,1 @@
+import Link from 'next/link';import {guides} from '@/src/lib/content';export const metadata={title:'Print-Ready Guides'};export default function Page(){return <main className="container stack"><h1>Print-Ready Guides</h1>{guides.map(([h,t,d])=><Link className="card" href={h} key={h}><h2>{t}</h2><p>{d}</p></Link>)}</main>}
