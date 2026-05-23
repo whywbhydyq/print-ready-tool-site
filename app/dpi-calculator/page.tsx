@@ -1,3 +1,6 @@
 import { DpiTool } from '@/src/components/CalculatorClient';
-export const metadata={title:'DPI Calculator',description:'Calculate effective DPI, required pixels and maximum print size.'};
+import { absoluteUrl } from '@/src/lib/site';
+const title='DPI Calculator';
+const description='Calculate effective DPI, required pixels and maximum print size.';
+export const metadata={title,description,alternates:{canonical:absoluteUrl('/dpi-calculator/')}};
 export default function Page(){return <DpiTool/>}
