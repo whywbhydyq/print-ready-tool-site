@@ -1,8 +1,7 @@
 import './globals.css';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://print-ready-tool-site.vercel.app';
+import { siteUrl } from '@/src/lib/site';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
