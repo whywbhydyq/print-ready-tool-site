@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import type { ChangeEvent, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
+import type { ChangeEvent, DragEvent, ReactNode } from 'react';
 import { z } from 'zod';
 import {
   MAX_IMAGE_BYTES,
@@ -62,7 +62,9 @@ const bleedSchema = z.object({
   const width = value.unit === 'cm' ? value.trimWidth / 2.54 : value.unit === 'mm' ? value.trimWidth / 25.4 : value.trimWidth;
   const height = value.unit === 'cm' ? value.trimHeight / 2.54 : value.unit === 'mm' ? value.trimHeight / 25.4 : value.trimHeight;
   const safe = value.unit === 'cm' ? value.safeMargin / 2.54 : value.unit === 'mm' ? value.safeMargin / 25.4 : value.safeMargin;
-  if (safe * 2 >= width || safe * 2 >= height) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['safeMargin'], message: 'Safe margin is too large for this trim size' });
+  if (safe * 2 >= width || safe * 2 >= height) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['safeMargin'], message: 'Safe margin is too large for this trim size' });
+  }
 });
 
 const kdpCoverSchema = z.object({
@@ -77,6 +79,8 @@ const kdpCoverSchema = z.object({
 const kdpInteriorSchema = z.object({
   trimWidth: positive('Trim width'),
   trimHeight: positive('Trim height'),
+  pages: pageCountSchema,
+  interior: z.enum(['bw', 'standard', 'premium']),
   hasBleed: z.boolean(),
   dpi: dpiSchema,
 });
@@ -84,18 +88,9 @@ const kdpInteriorSchema = z.object({
 const etsySchema = z.object({ dpi: dpiSchema });
 
 type Download = { label: string; filename: string; type: string; content: string; pngFromSvg?: boolean };
+type ResultBlock = { summary: ReactNode; details: ReactNode[]; warnings: string[]; errors?: string[] };
 
-type ResultBlock = {
-  summary: ReactNode;
-  details: ReactNode[];
-  warnings: string[];
-  errors?: string[];
-};
-
-function asNumber(value: string, fallback: number) {
-  const next = Number(value);
-  return Number.isFinite(next) ? next : fallback;
-}
+type KdpInteriorType = 'bw' | 'standard' | 'premium';
 
 function readParam(params: URLSearchParams, key: string, fallback: number) {
   const raw = params.get(key);
@@ -134,7 +129,7 @@ async function downloadPngFromSvg(filename: string, svg: string) {
     const loadedImage = await loaded;
     const canvas = document.createElement('canvas');
     canvas.width = loadedImage.naturalWidth || 1200;
-    canvas.height = loadedImage.naturalHeight || 800;
+    canvas.height = loadedImage.naturalHeight || 960;
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Canvas is not available');
     ctx.drawImage(loadedImage, 0, 0);
@@ -185,7 +180,7 @@ function Actions({ text, share, downloads }: { text: string; share: Record<strin
 }
 
 function ResultPanel({ result }: { result: ResultBlock }) {
-  if (result.errors?.length) return <div className="result"><h2>Summary</h2><p className="warning">Fix input errors to calculate.</p><h3>Input errors</h3><ul>{result.errors.map((error) => <li key={error}>{error}</li>)}</ul></div>;
+  if (result.errors?.length) return <div className="result"><h2>Summary</h2><p className="warning">Fix input errors to calculate.</p><h3>Input errors</h3><ul>{result.errors.map((error) => <li key={error}>{error}</li>)}</ul><h3>Warnings</h3><ul><li>Correct the invalid inputs before using these dimensions.</li></ul></div>;
   return <div className="result"><h2>Summary</h2><div>{result.summary}</div><h3>Details</h3><ul>{result.details.map((item, index) => <li key={index}>{item}</li>)}</ul><h3>Warnings</h3><ul>{result.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul></div>;
 }
 
@@ -253,20 +248,40 @@ export function ImageTool() {
   const [unit, setUnit] = useState<Unit>('in');
   const [dpi, setDpi] = useState(300);
   const [fileWarning, setFileWarning] = useState('');
-  function file(event: ChangeEvent<HTMLInputElement>) {
-    const selected = event.target.files?.[0];
-    if (!selected) return;
-    if (selected.size > MAX_IMAGE_BYTES) { setFileWarning('This file is over 100MB. Use manual pixel entry instead.'); return; }
+  const [isDragging, setIsDragging] = useState(false);
+
+  function readImageFile(selected: File) {
+    if (selected.size > MAX_IMAGE_BYTES) {
+      setFileWarning('This file is over 100MB. Use manual pixel entry instead.');
+      return;
+    }
+    if (!selected.type.startsWith('image/')) {
+      setFileWarning('Choose an image file or enter pixel dimensions manually.');
+      return;
+    }
     const url = URL.createObjectURL(selected);
     const image = new Image();
     image.onload = () => { setPxw(image.width); setPxh(image.height); URL.revokeObjectURL(url); setFileWarning('Image dimensions were read locally. The file was not uploaded.'); };
     image.onerror = () => { URL.revokeObjectURL(url); setFileWarning('Could not read this image. Try entering pixel dimensions manually.'); };
     image.src = url;
   }
+
+  function file(event: ChangeEvent<HTMLInputElement>) {
+    const selected = event.target.files?.[0];
+    if (selected) readImageFile(selected);
+  }
+
+  function drop(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    setIsDragging(false);
+    const selected = event.dataTransfer.files?.[0];
+    if (selected) readImageFile(selected);
+  }
+
   const parsed = imageSchema.safeParse({ pixelWidth: pxw, pixelHeight: pxh, targetWidth: w, targetHeight: h, unit, dpi });
   const r = parsed.success ? imageQuality(pxw, pxh, w, h, unit) : null;
   const text = r ? `Image ${pxw} x ${pxh} px, target ${w} x ${h} ${unit}, effective DPI ${round(r.edpi, 1)} (${r.quality})` : 'Invalid image inputs';
-  return <Tool title="Image Print Quality Checker"><p className="warning">Images are read locally in your browser. They are not uploaded, stored, or included in share links.</p><input type="file" accept="image/*" onChange={file} /><p className="small muted">{fileWarning}</p><div className="formgrid"><NumberField label="Pixel width" value={pxw} set={setPxw} min={1} /><NumberField label="Pixel height" value={pxh} set={setPxh} min={1} /><NumberField label="Target width" value={w} set={setW} step={0.01} min={0.01} /><NumberField label="Target height" value={h} set={setH} step={0.01} min={0.01} /><UnitSelect unit={unit} set={setUnit} allowPixels={false} /><DpiField dpi={dpi} set={setDpi} /></div><ResultPanel result={{ errors: zodMessages(parsed), summary: r && <p>{text}</p>, details: r ? [`Megapixels: ${round(r.mp, 2)} MP`, `Aspect ratio: ${round(r.aspect, 4)}`, ...r.max.map((x) => `${x.dpi} DPI max size: ${round(x.width, 2)} × ${round(x.height, 2)} in`)] : [], warnings: r?.cropRisk ? ['The image and target print size have different aspect ratios.', 'Image files are processed locally only.'] : ['Image files are processed locally only.', 'Compression, paper and sharpening can affect print quality.'] }} /><Actions text={text} share={{ w, h, unit, dpi }} downloads={r ? [{ label: 'Download CSV', filename: 'image-quality-result.csv', type: 'text/csv', content: csv([['field', 'value'], ['pixel_width', pxw], ['pixel_height', pxh], ['effective_dpi', round(r.edpi, 1)], ['verdict', r.quality]]) }] : []} /><StandardText /></Tool>;
+  return <Tool title="Image Print Quality Checker"><p className="warning">Images are read locally in your browser. They are not uploaded, stored, or included in share links.</p><div className="card" onDragOver={(event) => { event.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={drop}><p><strong>{isDragging ? 'Drop the image to read dimensions locally.' : 'Drop an image here, or choose a local image.'}</strong></p><input type="file" accept="image/*" onChange={file} /><p className="small muted">{fileWarning || 'No filename, original image bytes, or exact file content is sent to analytics by this tool.'}</p></div><div className="formgrid"><NumberField label="Pixel width" value={pxw} set={setPxw} min={1} /><NumberField label="Pixel height" value={pxh} set={setPxh} min={1} /><NumberField label="Target width" value={w} set={setW} step={0.01} min={0.01} /><NumberField label="Target height" value={h} set={setH} step={0.01} min={0.01} /><UnitSelect unit={unit} set={setUnit} allowPixels={false} /><DpiField dpi={dpi} set={setDpi} /></div><ResultPanel result={{ errors: zodMessages(parsed), summary: r && <p>{text}</p>, details: r ? [`Megapixels: ${round(r.mp, 2)} MP`, `Aspect ratio: ${round(r.aspect, 4)}`, ...r.max.map((x) => `${x.dpi} DPI max size: ${round(x.width, 2)} × ${round(x.height, 2)} in`)] : [], warnings: r?.cropRisk ? ['The image and target print size have different aspect ratios.', 'Image files are processed locally only.'] : ['Image files are processed locally only.', 'Compression, paper and sharpening can affect print quality.'] }} /><Actions text={text} share={{ w, h, unit, dpi }} downloads={r ? [{ label: 'Download CSV', filename: 'image-quality-result.csv', type: 'text/csv', content: csv([['field', 'value'], ['pixel_width', pxw], ['pixel_height', pxh], ['effective_dpi', round(r.edpi, 1)], ['verdict', r.quality]]) }] : []} /><StandardText /></Tool>;
 }
 
 export function BleedTool() {
@@ -300,13 +315,16 @@ export function KdpCoverTool() {
 export function KdpInteriorTool() {
   const [w, setW] = useState(6);
   const [h, setH] = useState(9);
+  const [pages, setPages] = useState(120);
+  const [interior, setInterior] = useState<KdpInteriorType>('bw');
   const [bleedOn, setBleedOn] = useState(true);
   const [dpi, setDpi] = useState(300);
-  const parsed = kdpInteriorSchema.safeParse({ trimWidth: w, trimHeight: h, hasBleed: bleedOn, dpi });
+  const parsed = kdpInteriorSchema.safeParse({ trimWidth: w, trimHeight: h, pages, interior, hasBleed: bleedOn, dpi });
   const r = parsed.success ? kdpInterior(w, h, 'in', bleedOn, dpi) : null;
   const svg = r ? svgGuide('KDP Interior Guide', [`Page setup: ${round(r.pageW, 3)} × ${round(r.pageH, 3)} in`, `Trim: ${w} × ${h} in`, `Canvas: ${r.pxW} × ${r.pxH} px`, bleedOn ? 'Bleed added to outside/top/bottom only' : 'No bleed added'], 'bleed') : '';
-  const text = r ? `KDP interior page setup ${round(r.pageW, 3)} x ${round(r.pageH, 3)} in; ${r.pxW} x ${r.pxH} px at ${dpi} DPI` : 'Invalid KDP interior inputs';
-  return <Tool title="KDP Interior Bleed Calculator"><div className="formgrid"><NumberField label="Trim width in" value={w} set={setW} step={0.01} min={0.01} /><NumberField label="Trim height in" value={h} set={setH} step={0.01} min={0.01} /><label><span>Bleed</span><select value={bleedOn ? 'yes' : 'no'} onChange={(event) => setBleedOn(event.target.value === 'yes')}><option value="yes">Yes</option><option value="no">No</option></select></label><DpiField dpi={dpi} set={setDpi} /></div><ResultPanel result={{ errors: zodMessages(parsed), summary: r && <p>{text}</p>, details: r ? [`With bleed: width adds 0.125 in to the outside edge; height adds 0.25 in total.`, `No extra bleed is added to the inside/gutter edge.`, `Formula: ${bleedOn ? 'trim width + 0.125; trim height + 0.25' : 'page size equals trim size'}`] : [], warnings: ['Interior bleed rules differ from full cover bleed.', 'Verify export settings in KDP previewer before publishing.'] }} /><Actions text={text} share={{ w, h, bleed: bleedOn, dpi }} downloads={r ? [{ label: 'Download SVG guide', filename: 'kdp-interior-guide.svg', type: 'image/svg+xml', content: svg }, { label: 'Download PNG guide', filename: 'kdp-interior-guide.png', type: 'image/png', content: svg, pngFromSvg: true }] : []} /><StandardText source="KDP interior bleed guidance" /></Tool>;
+  const checklist = textChecklist('KDP Interior Export Checklist', ['Set the manuscript page size before export.', bleedOn ? 'Extend full-page artwork 0.125 in past the outside, top and bottom edges.' : 'Do not include bleed if no artwork reaches the page edge.', 'Keep text, page numbers and logos away from trim and gutter.', 'Export a PDF and review every page in the KDP previewer.']);
+  const text = r ? `KDP interior page setup ${round(r.pageW, 3)} x ${round(r.pageH, 3)} in; ${r.pxW} x ${r.pxH} px at ${dpi} DPI; ${pages} pages; ${interior} interior` : 'Invalid KDP interior inputs';
+  return <Tool title="KDP Interior Bleed Calculator"><div className="formgrid"><NumberField label="Trim width in" value={w} set={setW} step={0.01} min={0.01} /><NumberField label="Trim height in" value={h} set={setH} step={0.01} min={0.01} /><NumberField label="Page count" value={pages} set={setPages} step={1} min={1} /><label><span>Interior</span><select value={interior} onChange={(event) => setInterior(event.target.value as KdpInteriorType)}><option value="bw">Black & white</option><option value="standard">Standard color</option><option value="premium">Premium color</option></select></label><label><span>Bleed</span><select value={bleedOn ? 'yes' : 'no'} onChange={(event) => setBleedOn(event.target.value === 'yes')}><option value="yes">Yes</option><option value="no">No</option></select></label><DpiField dpi={dpi} set={setDpi} /></div><ResultPanel result={{ errors: zodMessages(parsed), summary: r && <p>{text}</p>, details: r ? [`With bleed: width adds 0.125 in to the outside edge; height adds 0.25 in total.`, `No extra bleed is added to the inside/gutter edge.`, `Interior type recorded for export checklist: ${interior}.`, `Formula: ${bleedOn ? 'trim width + 0.125; trim height + 0.25' : 'page size equals trim size'}`] : [], warnings: ['Interior bleed rules differ from full cover bleed.', 'Leave extra gutter space for binding on the inside edge.', 'Verify export settings in KDP previewer before publishing.'] }} /><Actions text={text} share={{ w, h, pages, interior, bleed: bleedOn, dpi }} downloads={r ? [{ label: 'Download SVG guide', filename: 'kdp-interior-guide.svg', type: 'image/svg+xml', content: svg }, { label: 'Download PNG guide', filename: 'kdp-interior-guide.png', type: 'image/png', content: svg, pngFromSvg: true }, { label: 'Download checklist', filename: 'kdp-interior-checklist.txt', type: 'text/plain', content: checklist }] : []} /><StandardText source="KDP interior bleed guidance" /></Tool>;
 }
 
 export function EtsyTool() {
@@ -321,7 +339,7 @@ export function SizesTool() {
   const [dpi, setDpi] = useState(300);
   const rows = commonSizes.map(([name, w, h]) => [name, `${w} x ${h} in`, `${round(w * 2.54, 2)} x ${round(h * 2.54, 2)} cm`, `${Math.round(w * dpi)} x ${Math.round(h * dpi)} px`]);
   const text = csv([['size', 'inches', 'centimeters', `pixels_at_${dpi}_dpi`], ...rows]);
-  return <Tool title="Common Print Sizes Library"><div className="formgrid"><DpiField dpi={dpi} set={setDpi} /></div><table><thead><tr><th>Size</th><th>Inches</th><th>Centimeters</th><th>Pixels at {dpi} DPI</th></tr></thead><tbody>{rows.map((row) => <tr key={row[0]}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>)}</tbody></table><Actions text={text} share={{ dpi }} downloads={[{ label: 'Download CSV', filename: 'common-print-sizes.csv', type: 'text/csv', content: text }]} /><StandardText /></Tool>;
+  return <Tool title="Common Print Sizes Library"><div className="formgrid"><DpiField dpi={dpi} set={setDpi} /></div><ResultPanel result={{ summary: <p>{rows.length} common print sizes shown with inch, centimeter and {dpi} DPI pixel dimensions.</p>, details: [`Formula: pixels = inches × ${dpi} DPI.`, 'Included categories: ISO paper, US paper, photo prints, posters, business cards, KDP trims and square art.', 'Use this library as a quick reference before using the dedicated calculators for bleed, safe zone or KDP covers.'], warnings: ['Print providers can require different DPI, bleed or safe-zone values.', 'Pixel dimensions are rounded to whole pixels.', 'This table does not replace printer-specific templates.'] }} /><table><thead><tr><th>Size</th><th>Inches</th><th>Centimeters</th><th>Pixels at {dpi} DPI</th></tr></thead><tbody>{rows.map((row) => <tr key={row[0]}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>)}</tbody></table><Actions text={text} share={{ dpi }} downloads={[{ label: 'Download CSV', filename: 'common-print-sizes.csv', type: 'text/csv', content: text }]} /><StandardText /></Tool>;
 }
 
 function Tool({ title, children }: { title: string; children: ReactNode }) {
