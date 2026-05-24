@@ -1,1 +1,7 @@
-{"framework":"nextjs","buildCommand":"npm run build","installCommand":"npm install"}
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "ignoreCommand": "git fetch origin main:refs/remotes/origin/main --depth=1 && test \"$VERCEL_GIT_COMMIT_SHA\" != \"$(git rev-parse refs/remotes/origin/main)\""
+}
