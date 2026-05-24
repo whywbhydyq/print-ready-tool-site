@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { byPath, guides, templates, trust } from '@/src/lib/content';
 const extra:{[k:string]:string}={
 '/about/':'Print Ready Tools provides free browser-based calculators for print sizes, DPI, bleed, safe zones, KDP paperback setup and Etsy printable files. We are independent and not affiliated with Amazon, Etsy, Canva or Adobe.',
-'/contact/':'Send corrections, source updates and feature requests through the contact method listed by the site owner. Do not send files containing private customer data.',
+'/contact/':'For corrections, source updates or feature requests, contact aren.ymir@gmail.com. Do not send files containing private customer data.',
 '/privacy/':'Images are checked locally in your browser and are not uploaded or stored. Analytics should only use anonymous aggregate events and never record file names or exact image content.',
 '/terms/':'These tools are provided as-is for general print setup guidance. Verify final requirements with your printer, marketplace or publisher.',
 '/disclaimer/':'This site does not guarantee KDP, Etsy or print approval. Official templates and printer specifications override calculator estimates.',
