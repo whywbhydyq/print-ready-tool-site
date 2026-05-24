@@ -3,5 +3,5 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "ignoreCommand": "git fetch origin main:refs/remotes/origin/main --depth=1 && test \"$VERCEL_GIT_COMMIT_SHA\" != \"$(git rev-parse refs/remotes/origin/main)\""
+  "ignoreCommand": "node -e 'const e=process.env;const sha=e.VERCEL_GIT_COMMIT_SHA,ref=e.VERCEL_GIT_COMMIT_REF||\"main\",owner=e.VERCEL_GIT_REPO_OWNER,repo=e.VERCEL_GIT_REPO_SLUG;if(!sha||!owner||!repo){console.log(\"No Vercel Git metadata; build.\");process.exit(1)}fetch(`https://api.github.com/repos/${owner}/${repo}/commits/${encodeURIComponent(ref)}`).then(r=>r.ok?r.json():Promise.reject(new Error(`GitHub ${r.status}`))).then(d=>{const latest=d.sha;if(latest&&sha!==latest){console.log(`Skipping old commit ${sha}; latest is ${latest}.`);process.exit(0)}console.log(\"Current commit is latest; build.\");process.exit(1)}).catch(err=>{console.log(`Skip check failed: ${err.message}; build.`);process.exit(1)})'"
 }
