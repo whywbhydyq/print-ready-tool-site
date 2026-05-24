@@ -3,5 +3,5 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "ignoreCommand": "LATEST=$(git ls-remote https://github.com/$VERCEL_GIT_REPO_OWNER/$VERCEL_GIT_REPO_SLUG.git refs/heads/${VERCEL_GIT_COMMIT_REF:-main} | cut -f1) && test -n \"$LATEST\" && test \"$VERCEL_GIT_COMMIT_SHA\" != \"$LATEST\""
+  "ignoreCommand": "node scripts/skip-old-vercel-builds.mjs"
 }
