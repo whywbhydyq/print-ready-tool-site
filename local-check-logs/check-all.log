@@ -1,0 +1,165 @@
+
+> print-ready-tool-site@0.2.0 check:all
+> npm run typecheck && npm run lint && npm run test:calculations && NEXT_TELEMETRY_DISABLED=1 npm run build && npm run audit:pixelfit
+
+
+> print-ready-tool-site@0.2.0 typecheck
+> tsc --noEmit
+
+
+> print-ready-tool-site@0.2.0 lint
+> next lint
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✔ No ESLint warnings or errors
+
+> print-ready-tool-site@0.2.0 test:calculations
+> node scripts/test-pixelfit-calculations.mjs
+
+PASS ratio 1920x1080: 16:9
+PASS ratio 1080x1920: 9:16
+PASS ratio 1080x1350: 4:5
+PASS ratio 1000x1500: 2:3
+PASS 10cm at 300 PPI: 1181
+PASS 210mm at 300 PPI: 2480
+PASS 297mm at 300 PPI: 3508
+PASS 3000px at 300 PPI inches: 10
+PASS print quality thresholds
+PixelFit calculation smoke tests passed.
+
+> print-ready-tool-site@0.2.0 prebuild
+> npm run typecheck && npm run lint
+
+
+> print-ready-tool-site@0.2.0 typecheck
+> tsc --noEmit
+
+
+> print-ready-tool-site@0.2.0 lint
+> next lint
+
+✔ No ESLint warnings or errors
+
+> print-ready-tool-site@0.2.0 build
+> next build
+
+ ⚠ Disabling outputFileTracing will not be an option in the next major version. Please report any issues you may be experiencing to https://github.com/vercel/next.js/issues
+  ▲ Next.js 14.2.35
+  - Experiments (use with caution):
+    · cpus
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/36) ...
+   Generating static pages (9/36) 
+   Generating static pages (18/36) 
+   Generating static pages (27/36) 
+ ✓ Generating static pages (36/36)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                   Size     First Load JS
+┌ ○ /                                         178 B          96.2 kB
+├ ○ /_not-found                               138 B          87.4 kB
+├ ● /[...slug]                                9.5 kB          105 kB
+├   ├ /guides/8x10-print-size-pixels-300-dpi
+├   ├ /guides/a4-size-in-pixels-300-dpi
+├   ├ /guides/24x36-poster-size-pixels
+├   └ [+27 more paths]
+├ ○ /robots.txt                               0 B                0 B
+└ ○ /sitemap.xml                              0 B                0 B
++ First Load JS shared by all                 87.3 kB
+  ├ chunks/117-032db8346ccf1241.js            31.8 kB
+  ├ chunks/fd9d1056-5d0c434f4506d830.js       53.6 kB
+  └ other shared chunks (total)               1.89 kB
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses getStaticProps)
+
+
+> print-ready-tool-site@0.2.0 audit:pixelfit
+> node scripts/audit-pixelfit.mjs
+
+PASS exists: package.json
+PASS exists: app/layout.tsx
+PASS exists: app/page.tsx
+PASS exists: app/[...slug]/page.tsx
+PASS exists: app/sitemap.ts
+PASS exists: app/robots.ts
+PASS exists: app/globals.css
+PASS exists: public/ads.txt
+PASS exists: vercel.json
+PASS exists: scripts/skip-old-vercel-builds.mjs
+PASS exists: src/data/image-tools/imageSpecs.ts
+PASS exists: src/data/image-tools/paperSpecs.ts
+PASS exists: src/data/image-tools/dpiPresets.ts
+PASS exists: src/data/image-tools/toolPages.ts
+PASS exists: src/data/image-tools/sourcePolicy.ts
+PASS exists: src/lib/image-tools/aspectRatio.ts
+PASS exists: src/lib/image-tools/dpi.ts
+PASS exists: src/lib/image-tools/printSize.ts
+PASS exists: src/lib/image-tools/paperSize.ts
+PASS exists: src/lib/image-tools/cropFit.ts
+PASS exists: src/lib/image-tools/megapixel.ts
+PASS exists: src/lib/image-tools/overlay.ts
+PASS exists: src/components/SafeZoneCanvas.tsx
+PASS exists: src/components/ImageUploadPreview.tsx
+PASS exists: src/components/OverlayDownloadButtons.tsx
+PASS exists: src/components/ResultCard.tsx
+PASS exists: src/components/RiskBadge.tsx
+PASS exists: src/components/CopyButton.tsx
+PASS exists: src/components/RelatedTools.tsx
+PASS exists: src/components/PixelFitClient.tsx
+PASS no meta keywords
+PASS image upload preview has no server upload call
+PASS vercel ignoreCommand uses script
+PASS image-size page count is 11 including hub, got 11
+PASS route present: /image-size/aspect-ratio-calculator/
+PASS route present: /image-size/print-size-calculator/
+PASS route present: /image-size/dpi-calculator/
+PASS route present: /image-size/cm-to-pixels/
+PASS route present: /image-size/a4-size-in-pixels/
+PASS route present: /image-size/youtube-banner-safe-area/
+PASS route present: /image-size/youtube-thumbnail-safe-zone/
+PASS route present: /image-size/short-video-safe-zone/
+PASS route present: /image-size/linkedin-banner-size/
+PASS route present: /image-size/x-header-size/
+PASS spec present: youtube-banner
+PASS spec present: youtube-thumbnail
+PASS spec present: short-video-safe-zone
+PASS spec present: linkedin-banner
+PASS spec present: x-header
+PASS each P0 platform spec has sourceConfidence
+PASS each P0 platform spec has sourceUrl
+PASS each P0 platform spec has lastCheckedAt
+PASS overlay SVG and PNG downloads implemented
+PASS local image privacy notice present
+PASS FAQ and breadcrumb JSON-LD implemented
+PASS sitemap source includes /image-size/aspect-ratio-calculator/
+PASS sitemap source includes /image-size/print-size-calculator/
+PASS sitemap source includes /image-size/dpi-calculator/
+PASS sitemap source includes /image-size/cm-to-pixels/
+PASS sitemap source includes /image-size/a4-size-in-pixels/
+PASS sitemap source includes /image-size/youtube-banner-safe-area/
+PASS sitemap source includes /image-size/youtube-thumbnail-safe-zone/
+PASS sitemap source includes /image-size/short-video-safe-zone/
+PASS sitemap source includes /image-size/linkedin-banner-size/
+PASS sitemap source includes /image-size/x-header-size/
+PASS PixelFit client uses ResultCard
+PASS PixelFit client uses CopyButton
+PASS PixelFit client uses RelatedTools
+PASS PixelFit client uses ImageUploadPreview
+PASS PixelFit client uses SafeZoneCanvas
+PASS PixelFit client uses OverlayDownloadButtons
+PASS short video caption length control implemented
+PASS megapixel calculation surfaced in safe-zone result card
+PASS home page is not forced dynamic
+PixelFit audit passed.

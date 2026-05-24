@@ -1,0 +1,79 @@
+
+> print-ready-tool-site@0.2.0 audit:pixelfit
+> node scripts/audit-pixelfit.mjs
+
+PASS exists: package.json
+PASS exists: app/layout.tsx
+PASS exists: app/page.tsx
+PASS exists: app/[...slug]/page.tsx
+PASS exists: app/sitemap.ts
+PASS exists: app/robots.ts
+PASS exists: app/globals.css
+PASS exists: public/ads.txt
+PASS exists: vercel.json
+PASS exists: scripts/skip-old-vercel-builds.mjs
+PASS exists: src/data/image-tools/imageSpecs.ts
+PASS exists: src/data/image-tools/paperSpecs.ts
+PASS exists: src/data/image-tools/dpiPresets.ts
+PASS exists: src/data/image-tools/toolPages.ts
+PASS exists: src/data/image-tools/sourcePolicy.ts
+PASS exists: src/lib/image-tools/aspectRatio.ts
+PASS exists: src/lib/image-tools/dpi.ts
+PASS exists: src/lib/image-tools/printSize.ts
+PASS exists: src/lib/image-tools/paperSize.ts
+PASS exists: src/lib/image-tools/cropFit.ts
+PASS exists: src/lib/image-tools/megapixel.ts
+PASS exists: src/lib/image-tools/overlay.ts
+PASS exists: src/components/SafeZoneCanvas.tsx
+PASS exists: src/components/ImageUploadPreview.tsx
+PASS exists: src/components/OverlayDownloadButtons.tsx
+PASS exists: src/components/ResultCard.tsx
+PASS exists: src/components/RiskBadge.tsx
+PASS exists: src/components/CopyButton.tsx
+PASS exists: src/components/RelatedTools.tsx
+PASS exists: src/components/PixelFitClient.tsx
+PASS no meta keywords
+PASS image upload preview has no server upload call
+PASS vercel ignoreCommand uses script
+PASS image-size page count is 11 including hub, got 11
+PASS route present: /image-size/aspect-ratio-calculator/
+PASS route present: /image-size/print-size-calculator/
+PASS route present: /image-size/dpi-calculator/
+PASS route present: /image-size/cm-to-pixels/
+PASS route present: /image-size/a4-size-in-pixels/
+PASS route present: /image-size/youtube-banner-safe-area/
+PASS route present: /image-size/youtube-thumbnail-safe-zone/
+PASS route present: /image-size/short-video-safe-zone/
+PASS route present: /image-size/linkedin-banner-size/
+PASS route present: /image-size/x-header-size/
+PASS spec present: youtube-banner
+PASS spec present: youtube-thumbnail
+PASS spec present: short-video-safe-zone
+PASS spec present: linkedin-banner
+PASS spec present: x-header
+PASS each P0 platform spec has sourceConfidence
+PASS each P0 platform spec has sourceUrl
+PASS each P0 platform spec has lastCheckedAt
+PASS overlay SVG and PNG downloads implemented
+PASS local image privacy notice present
+PASS FAQ and breadcrumb JSON-LD implemented
+PASS sitemap source includes /image-size/aspect-ratio-calculator/
+PASS sitemap source includes /image-size/print-size-calculator/
+PASS sitemap source includes /image-size/dpi-calculator/
+PASS sitemap source includes /image-size/cm-to-pixels/
+PASS sitemap source includes /image-size/a4-size-in-pixels/
+PASS sitemap source includes /image-size/youtube-banner-safe-area/
+PASS sitemap source includes /image-size/youtube-thumbnail-safe-zone/
+PASS sitemap source includes /image-size/short-video-safe-zone/
+PASS sitemap source includes /image-size/linkedin-banner-size/
+PASS sitemap source includes /image-size/x-header-size/
+PASS PixelFit client uses ResultCard
+PASS PixelFit client uses CopyButton
+PASS PixelFit client uses RelatedTools
+PASS PixelFit client uses ImageUploadPreview
+PASS PixelFit client uses SafeZoneCanvas
+PASS PixelFit client uses OverlayDownloadButtons
+PASS short video caption length control implemented
+PASS megapixel calculation surfaced in safe-zone result card
+PASS home page is not forced dynamic
+PixelFit audit passed.

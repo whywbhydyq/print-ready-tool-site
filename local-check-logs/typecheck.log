@@ -1,0 +1,4 @@
+
+> print-ready-tool-site@0.2.0 typecheck
+> tsc --noEmit
+

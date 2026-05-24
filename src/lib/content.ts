@@ -1,8 +1,32 @@
-import { pages as pixelFitPages } from '@/src/data/image-tools';
-
-export const coreTools=[['/image-size/','PixelFit Image Size Tools','Aspect ratio, DPI, A4 pixels and social safe-zone overlays for local image checks.'],['/print-size-calculator/','Print Size Calculator','Convert pixels to inches, centimetres, millimetres and required pixels by DPI.'],['/dpi-calculator/','DPI Calculator','Calculate effective DPI, required pixels and maximum print size for artwork.'],['/image-print-quality-checker/','Image Print Quality Checker','Check a local image’s pixel dimensions against a target print size.'],['/bleed-safe-zone-calculator/','Bleed & Safe Zone Calculator','Calculate trim, full bleed canvas, safe area and pixels.'],['/kdp-cover-calculator/','KDP Cover Size Calculator','Calculate paperback cover size, spine width and pixel canvas.'],['/kdp-interior-bleed-calculator/','KDP Interior Bleed Calculator','Calculate KDP manuscript page size with and without bleed.'],['/etsy-printable-size-calculator/','Etsy Printable Size Pack Calculator','Generate ratio pack sizes and buyer instruction text.'],['/common-print-sizes/','Common Print Sizes Library','Reference inches, cm, mm and pixels for common sizes.']];
-export const guides=[['/guides/8x10-print-size-pixels-300-dpi/','8x10 Print Size in Pixels at 300 DPI','An 8x10 print needs 2400 x 3000 pixels at 300 DPI.'],['/guides/a4-size-in-pixels-300-dpi/','A4 Size in Pixels at 300 DPI','A4 at 300 DPI is approximately 2481 x 3507 pixels.'],['/guides/24x36-poster-size-pixels/','24x36 Poster Size in Pixels','A 24x36 poster is 7200 x 10800 pixels at 300 DPI.'],['/guides/business-card-bleed-size/','Business Card Bleed Size','Common US business card bleed is 0.125 inches per side.'],['/guides/canva-print-bleed-crop-marks/','Canva Print Bleed and Crop Marks','Set bleed and crop marks before exporting print PDF files.'],['/guides/kdp-6x9-cover-size/','KDP 6x9 Cover Size','Calculate a 6x9 paperback cover with spine and bleed.'],['/guides/kdp-spine-width-calculator/','KDP Spine Width Calculator','KDP spine width equals page count times paper multiplier.'],['/guides/kdp-paperback-cover-rejection-checklist/','KDP Paperback Cover Rejection Checklist','Avoid common cover upload mistakes.'],['/guides/etsy-printable-wall-art-sizes/','Etsy Printable Wall Art Sizes','Use multiple ratios so buyers can print standard frames.'],['/guides/etsy-printable-ratio-guide/','Etsy Printable Ratio Guide','2:3, 3:4, 4:5, 5:7, 11:14, ISO and square explained.']];
-export const templates=[['/templates/etsy-buyer-instruction-template/','Etsy Buyer Instruction Template','Copyable buyer instructions for digital printable files.'],['/templates/kdp-cover-setup-checklist/','KDP Cover Setup Checklist','Checklist for paperback cover setup.'],['/templates/print-ready-pdf-checklist/','Print-Ready PDF Checklist','Checklist before sending PDFs to print.']];
-export const trust=[['/about/','About'],['/contact/','Contact'],['/privacy/','Privacy Policy'],['/terms/','Terms'],['/disclaimer/','Disclaimer'],['/glossary/','Glossary']];
-export const allRoutes=['/',...coreTools.map(x=>x[0]),...pixelFitPages.map(x=>x.href),'/guides/',...guides.map(x=>x[0]),'/templates/',...templates.map(x=>x[0]),...trust.map(x=>x[0])].filter((value,index,array)=>array.indexOf(value)===index);
-export function byPath(path:string){return [...coreTools,...guides,...templates,...trust].find(x=>x[0]===path)}
+import { toolPages } from '@/src/data/image-tools';
+export const coreTools = [
+  ['/image-size/', 'PixelFit Image Size Tools', 'Aspect ratio, DPI, A4 pixels and social safe-zone overlays for local image checks.'],
+  ['/print-size-calculator/', 'Print Size Calculator', 'Convert pixels to inches, centimetres, millimetres and required pixels by DPI.'],
+  ['/dpi-calculator/', 'DPI Calculator', 'Calculate effective DPI, required pixels and maximum print size for artwork.'],
+  ['/image-print-quality-checker/', 'Image Print Quality Checker', 'Check a local image’s pixel dimensions against a target print size.'],
+  ['/bleed-safe-zone-calculator/', 'Bleed & Safe Zone Calculator', 'Calculate trim, full bleed canvas, safe area and pixels.'],
+  ['/kdp-cover-calculator/', 'KDP Cover Size Calculator', 'Calculate paperback cover size, spine width and pixel canvas.'],
+  ['/kdp-interior-bleed-calculator/', 'KDP Interior Bleed Calculator', 'Calculate KDP manuscript page size with and without bleed.'],
+  ['/etsy-printable-size-calculator/', 'Etsy Printable Size Pack Calculator', 'Generate ratio pack sizes and buyer instruction text.'],
+  ['/common-print-sizes/', 'Common Print Sizes Library', 'Reference inches, cm, mm and pixels for common sizes.']
+] as const;
+export const guides = [
+  ['/guides/8x10-print-size-pixels-300-dpi/', '8x10 Print Size in Pixels at 300 DPI', 'An 8x10 print needs 2400 x 3000 pixels at 300 DPI.'],
+  ['/guides/a4-size-in-pixels-300-dpi/', 'A4 Size in Pixels at 300 DPI', 'A4 at 300 DPI is approximately 2480 x 3508 pixels.'],
+  ['/guides/24x36-poster-size-pixels/', '24x36 Poster Size in Pixels', 'A 24x36 poster is 7200 x 10800 pixels at 300 DPI.'],
+  ['/guides/business-card-bleed-size/', 'Business Card Bleed Size', 'Common US business card bleed is 0.125 inches per side.'],
+  ['/guides/canva-print-bleed-crop-marks/', 'Canva Print Bleed and Crop Marks', 'Set bleed and crop marks before exporting print PDF files.'],
+  ['/guides/kdp-6x9-cover-size/', 'KDP 6x9 Cover Size', 'Calculate a 6x9 paperback cover with spine and bleed.'],
+  ['/guides/kdp-spine-width-calculator/', 'KDP Spine Width Calculator', 'KDP spine width equals page count times paper multiplier.'],
+  ['/guides/kdp-paperback-cover-rejection-checklist/', 'KDP Paperback Cover Rejection Checklist', 'Avoid common cover upload mistakes.'],
+  ['/guides/etsy-printable-wall-art-sizes/', 'Etsy Printable Wall Art Sizes', 'Use multiple ratios so buyers can print standard frames.'],
+  ['/guides/etsy-printable-ratio-guide/', 'Etsy Printable Ratio Guide', '2:3, 3:4, 4:5, 5:7, 11:14, ISO and square explained.']
+] as const;
+export const templates = [
+  ['/templates/etsy-buyer-instruction-template/', 'Etsy Buyer Instruction Template', 'Copyable buyer instructions for digital printable files.'],
+  ['/templates/kdp-cover-setup-checklist/', 'KDP Cover Setup Checklist', 'Checklist for paperback cover setup.'],
+  ['/templates/print-ready-pdf-checklist/', 'Print-Ready PDF Checklist', 'Checklist before sending PDFs to print.']
+] as const;
+export const trust = [['/about/', 'About'], ['/contact/', 'Contact'], ['/privacy/', 'Privacy Policy'], ['/terms/', 'Terms'], ['/disclaimer/', 'Disclaimer'], ['/glossary/', 'Glossary']] as const;
+export const allRoutes = ['/', ...coreTools.map((x) => x[0]), ...toolPages.map((x) => x.href), '/guides/', ...guides.map((x) => x[0]), '/templates/', ...templates.map((x) => x[0]), ...trust.map((x) => x[0])].filter((value, index, array) => array.indexOf(value) === index);
+export function byPath(path: string) { return [...coreTools, ...guides, ...templates, ...trust].find((item) => item[0] === path); }

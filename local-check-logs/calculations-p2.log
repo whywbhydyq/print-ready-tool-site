@@ -1,0 +1,23 @@
+
+> print-ready-tool-site@0.3.0 test:calculations
+> node scripts/test-pixelfit-calculations.mjs
+
+PASS ratio 1920x1080: 16:9
+PASS ratio 1080x1920: 9:16
+PASS ratio 1080x1350: 4:5
+PASS ratio 1000x1500: 2:3
+PASS 10cm at 300 PPI: 1181
+PASS 210mm at 300 PPI: 2480
+PASS 297mm at 300 PPI: 3508
+PASS 3000px at 300 PPI inches: 10
+PASS Pinterest 1000x1500 megapixels: 1.5
+PASS Shopify 5000x5000 megapixels: 25
+PASS Open Graph 1200x630 ratio width/height: 190
+PASS Google Play feature graphic width: 1024
+PASS Google Play feature graphic height: 500
+PASS App Store iPhone 6.9 portrait height: 2796
+PASS US passport 2 inches at 300 PPI: 600
+PASS Amazon 2000x2000 megapixels: 4
+PASS Email 1200x400 ratio width/height: 300
+PASS print quality thresholds
+PixelFit P0 + P1 + P2 calculation smoke tests passed.

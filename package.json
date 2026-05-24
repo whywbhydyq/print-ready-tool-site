@@ -1,6 +1,6 @@
 {
   "name": "print-ready-tool-site",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,27 +8,22 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "e2e": "playwright test",
-    "format": "prettier --check .",
-    "format:write": "prettier --write ."
+    "audit:pixelfit": "node scripts/audit-pixelfit.mjs",
+    "check:all": "npm run typecheck && npm run lint && npm run test:calculations && NEXT_TELEMETRY_DISABLED=1 npm run build && npm run audit:pixelfit",
+    "test:calculations": "node scripts/test-pixelfit-calculations.mjs",
+    "prebuild": "npm run typecheck && npm run lint"
   },
   "dependencies": {
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
-    "next": "^14.2.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "typescript": "^5.4.2",
-    "zod": "^3.22.4"
+    "next": "14.2.35",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "typescript": "^5.4.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.3",
-    "prettier": "^3.2.5",
-    "vitest": "^1.5.0"
+    "eslint-config-next": "14.2.35"
   }
 }
