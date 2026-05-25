@@ -1,4 +1,7 @@
 import { toolPages } from '@/src/data/image-tools';
+
+export type RouteTuple = readonly [string, string, string];
+
 export const coreTools = [
   ['/image-size/', 'PixelFit Image Size Tools', 'Aspect ratio, DPI, A4 pixels and social safe-zone overlays for local image checks.'],
   ['/print-size-calculator/', 'Print Size Calculator', 'Convert pixels to inches, centimetres, millimetres and required pixels by DPI.'],
@@ -9,7 +12,13 @@ export const coreTools = [
   ['/kdp-interior-bleed-calculator/', 'KDP Interior Bleed Calculator', 'Calculate KDP manuscript page size with and without bleed.'],
   ['/etsy-printable-size-calculator/', 'Etsy Printable Size Pack Calculator', 'Generate ratio pack sizes and buyer instruction text.'],
   ['/common-print-sizes/', 'Common Print Sizes Library', 'Reference inches, cm, mm and pixels for common sizes.']
-] as const;
+] as const satisfies readonly RouteTuple[];
+
+export const guideRoots = [
+  ['/guides/', 'Print-Ready Guides', 'Short guides for DPI, bleed, safe zones, print sizes, KDP covers and Etsy printable setup.'],
+  ['/templates/', 'Print-Ready Templates', 'Reusable print and marketplace setup checklists for print-ready files.']
+] as const satisfies readonly RouteTuple[];
+
 export const guides = [
   ['/guides/8x10-print-size-pixels-300-dpi/', '8x10 Print Size in Pixels at 300 DPI', 'An 8x10 print needs 2400 x 3000 pixels at 300 DPI.'],
   ['/guides/a4-size-in-pixels-300-dpi/', 'A4 Size in Pixels at 300 DPI', 'A4 at 300 DPI is approximately 2480 x 3508 pixels.'],
@@ -21,12 +30,31 @@ export const guides = [
   ['/guides/kdp-paperback-cover-rejection-checklist/', 'KDP Paperback Cover Rejection Checklist', 'Avoid common cover upload mistakes.'],
   ['/guides/etsy-printable-wall-art-sizes/', 'Etsy Printable Wall Art Sizes', 'Use multiple ratios so buyers can print standard frames.'],
   ['/guides/etsy-printable-ratio-guide/', 'Etsy Printable Ratio Guide', '2:3, 3:4, 4:5, 5:7, 11:14, ISO and square explained.']
-] as const;
+] as const satisfies readonly RouteTuple[];
+
 export const templates = [
   ['/templates/etsy-buyer-instruction-template/', 'Etsy Buyer Instruction Template', 'Copyable buyer instructions for digital printable files.'],
   ['/templates/kdp-cover-setup-checklist/', 'KDP Cover Setup Checklist', 'Checklist for paperback cover setup.'],
   ['/templates/print-ready-pdf-checklist/', 'Print-Ready PDF Checklist', 'Checklist before sending PDFs to print.']
-] as const;
-export const trust = [['/about/', 'About'], ['/contact/', 'Contact'], ['/privacy/', 'Privacy Policy'], ['/terms/', 'Terms'], ['/disclaimer/', 'Disclaimer'], ['/glossary/', 'Glossary']] as const;
-export const allRoutes = ['/', ...coreTools.map((x) => x[0]), ...toolPages.map((x) => x.href), '/guides/', ...guides.map((x) => x[0]), '/templates/', ...templates.map((x) => x[0]), ...trust.map((x) => x[0])].filter((value, index, array) => array.indexOf(value) === index);
-export function byPath(path: string) { return [...coreTools, ...guides, ...templates, ...trust].find((item) => item[0] === path); }
+] as const satisfies readonly RouteTuple[];
+
+export const trust = [
+  ['/about/', 'About', 'About Print Ready Tools and PixelFit image size tools.'],
+  ['/contact/', 'Contact', 'Contact details for corrections, source updates and feature requests.'],
+  ['/privacy/', 'Privacy Policy', 'Privacy policy for browser-based print and image tools.'],
+  ['/terms/', 'Terms', 'Terms for using free print-ready calculators and PixelFit tools.'],
+  ['/disclaimer/', 'Disclaimer', 'Limits of calculator estimates, safe-zone previews and marketplace guidance.'],
+  ['/glossary/', 'Glossary', 'Definitions for DPI, PPI, bleed, safe zone, trim, aspect ratio and megapixels.']
+] as const satisfies readonly RouteTuple[];
+
+export const staticContentRoutes = [...coreTools, ...guideRoots, ...guides, ...templates, ...trust] as const;
+
+export const allRoutes = [
+  '/',
+  ...staticContentRoutes.map((route) => route[0]),
+  ...toolPages.map((tool) => tool.href)
+].filter((value, index, array) => array.indexOf(value) === index);
+
+export function byPath(path: string): RouteTuple | undefined {
+  return staticContentRoutes.find((item) => item[0] === path);
+}

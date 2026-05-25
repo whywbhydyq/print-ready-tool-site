@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { byPath, guides, templates, trust } from '@/src/lib/content';
+import { allRoutes, byPath, trust } from '@/src/lib/content';
 import { absoluteUrl } from '@/src/lib/site';
-import { toolPageByPath, toolPages } from '@/src/data/image-tools';
+import { toolPageByPath } from '@/src/data/image-tools';
 import { PixelFitPage } from '@/src/components/PixelFitClient';
 const extra: Record<string, string> = {
   '/about/': 'Print Ready Tools provides free browser-based calculators for print sizes, DPI, bleed, safe zones, KDP covers, Etsy printable files, and PixelFit image size tools. We are independent and not affiliated with Amazon, Etsy, Canva, Adobe, YouTube, TikTok, LinkedIn or X.',
@@ -18,7 +18,7 @@ const extra: Record<string, string> = {
 };
 type PageProps = { params: { slug: string[] } };
 export const dynamicParams = false;
-export function generateStaticParams() { return [...guides, ...templates, ...trust, ...toolPages.map((page) => [page.href, page.title, page.description] as [string, string, string])].map(([href]) => ({ slug: href.split('/').filter(Boolean) })); }
+export function generateStaticParams() { return allRoutes.filter((href) => href !== '/').map((href) => ({ slug: href.split('/').filter(Boolean) })); }
 export function generateMetadata({ params }: PageProps): Metadata {
   const path = '/' + params.slug.join('/') + '/';
   const pixel = toolPageByPath(path);

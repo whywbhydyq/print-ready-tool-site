@@ -2,9 +2,15 @@
 const nextConfig = {
   trailingSlash: true,
   poweredByHeader: false,
-  outputFileTracing: false,
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
-  experimental: { cpus: 1, workerThreads: false }
+  experimental: {
+    cpus: 1,
+    workerThreads: false
+  },
+  webpack: (config, { dev }) => {
+    if (!dev && config.optimization) {
+      config.optimization.minimize = false;
+    }
+    return config;
+  }
 };
 export default nextConfig;

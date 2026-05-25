@@ -32,6 +32,11 @@ assertClose('App Store iPhone 6.9 portrait height', 2796, 2796, 0);
 assertClose('US passport 2 inches at 300 PPI', 2 * 300, 600, 0);
 assertClose('Amazon 2000x2000 megapixels', 2000*2000/1000000, 4, 0);
 assertClose('Email 1200x400 ratio width/height', Math.round((1200/400)*100), 300, 0);
+assertClose('Facebook event 1920x1005 ratio width/height', Math.round((1920/1005)*100), 191, 0);
+assertClose('US business card trim 3.5in at 300 PPI', 3.5 * 300, 1050, 0);
+assertClose('US business card full bleed 3.75in at 300 PPI', 3.75 * 300, 1125, 0);
+assertClose('Google Play app icon size', 512, 512, 0);
+assertClose('Google Play screenshot max ratio rule', 1920 / 1080, 1.7777777778, 0.001);
 
 if (quality(300) !== 'High' || quality(200) !== 'Acceptable' || quality(150) !== 'Low' || quality(149) !== 'Not recommended') {
   console.error('FAIL print quality thresholds'); process.exitCode = 1;

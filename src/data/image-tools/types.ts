@@ -59,7 +59,7 @@ export type PaperSpec = {
   heightMm: number;
   group: 'ISO' | 'US' | 'Photo' | 'Business';
 };
-export type ToolKind = 'hub' | 'aspect' | 'print' | 'dpi' | 'unit' | 'paper' | 'safe' | 'pinterest-ratio' | 'check' | 'megapixel' | 'recommender' | 'focal' | 'matrix' | 'overlay-hub' | 'batch';
+export type ToolKind = 'hub' | 'aspect' | 'print' | 'dpi' | 'unit' | 'paper' | 'safe' | 'pinterest-ratio' | 'check' | 'megapixel' | 'recommender' | 'focal' | 'matrix' | 'overlay-hub' | 'batch' | 'database';
 export type ToolPage = {
   href: string;
   slug: string;
