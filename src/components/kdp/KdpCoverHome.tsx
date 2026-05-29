@@ -105,7 +105,6 @@ export function KdpCoverHome() {
                 <select value="paperback" aria-label="Binding type" onChange={() => undefined}>
                   <option value="paperback">Paperback</option>
                 </select>
-                <small>Hardcover support is not included in this paperback calculator.</small>
               </label>
               <label className="kdp-field">Interior type
                 <select value={draftInput.interior} onChange={(event) => {
@@ -158,7 +157,11 @@ export function KdpCoverHome() {
               </label>
             </div>
             <label className="kdp-toggle-row">Barcode safe zone
-              <input type="checkbox" checked={draftInput.showBarcode} onChange={(event) => update({ showBarcode: event.target.checked })} />
+              <input type="checkbox" checked={draftInput.showBarcode} onChange={(event) => {
+                const showBarcode = event.target.checked;
+                setDraftInput((current) => ({ ...current, showBarcode }));
+                setConfirmedInput((current) => ({ ...current, showBarcode }));
+              }} />
               <span>Show barcode safe zone on preview</span>
             </label>
             <button type="button" className="kdp-primary-button" onClick={calculate}>Calculate cover size</button>
@@ -188,8 +191,8 @@ export function KdpCoverHome() {
                   <li>Cover file incl. bleed: {formatInches(result.fullCoverWidthIn, 3)} × {formatInches(result.fullCoverHeightIn, 2)} in.</li>
                   <li>Trim spread: {formatInches(result.trimSpreadWidthIn, 3)} × {formatInches(result.trimHeightIn, 2)} in.</li>
                   <li>At {result.ppi} PPI, use {result.pixelWidth} × {result.pixelHeight} px.</li>
-                  <li>Back cover: {formatInches(result.trimWidthIn, 2)} × {formatInches(result.trimHeightIn, 2)} in · Front cover: {formatInches(result.trimWidthIn, 2)} × {formatInches(result.trimHeightIn, 2)} in.</li>
-                  <li>Spine: {formatInches(result.spineWidthIn, 3)} in · Bleed: {formatInches(result.bleedIn, 3)} in.</li>
+                  <li>Back and front cover: {formatInches(result.trimWidthIn, 2)} × {formatInches(result.trimHeightIn, 2)} in each.</li>
+                  <li>Spine {formatInches(result.spineWidthIn, 3)} in · Bleed {formatInches(result.bleedIn, 3)} in · Final check in KDP Previewer.</li>
                 </ul>
               </div>
               <KdpResultActions result={result} summary={summary} disabled={!calculated} />
