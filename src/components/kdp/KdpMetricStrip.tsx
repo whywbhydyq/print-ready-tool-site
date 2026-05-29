@@ -12,14 +12,14 @@ export function KdpMetricStrip({ result }: Props) {
       sub: `${(inchesToCm(result.spineWidthIn) * 10).toFixed(2)} mm`
     },
     {
-      label: 'Full cover size',
+      label: 'Cover file size incl. bleed',
       value: `${formatInches(result.fullCoverWidthIn, 3)} × ${formatInches(result.fullCoverHeightIn, 2)} in`,
-      sub: `${inchesToCm(result.fullCoverWidthIn).toFixed(2)} × ${inchesToCm(result.fullCoverHeightIn).toFixed(2)} cm`
+      sub: `Trim spread: ${formatInches(result.trimSpreadWidthIn, 3)} × ${formatInches(result.trimHeightIn, 2)} in`
     },
     {
       label: 'Pixel canvas',
       value: `${result.pixelWidth} × ${result.pixelHeight} px`,
-      sub: '@ 300 PPI'
+      sub: `@ ${result.ppi} PPI`
     },
     {
       label: 'Barcode safe zone',

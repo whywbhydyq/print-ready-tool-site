@@ -20,7 +20,10 @@ export type KdpCoverResult = {
   spineWidthIn: number;
   fullCoverWidthIn: number;
   fullCoverHeightIn: number;
+  trimSpreadWidthIn: number;
   bleedIn: number;
+  ppi: number;
+  pageCount: number;
   pixelWidth: number;
   pixelHeight: number;
   barcodeSafeZone: {
@@ -105,7 +108,10 @@ export function calculateKdpCoverSize(input: KdpCoverInput): KdpCoverResult {
     spineWidthIn,
     fullCoverWidthIn,
     fullCoverHeightIn,
+    trimSpreadWidthIn: roundTo(trimWidthIn * 2 + spineWidthIn, 3),
     bleedIn: safeBleed,
+    ppi: safePpi,
+    pageCount: safePageCount,
     pixelWidth: Math.round(fullCoverWidthIn * safePpi),
     pixelHeight: Math.round(fullCoverHeightIn * safePpi),
     barcodeSafeZone: {
