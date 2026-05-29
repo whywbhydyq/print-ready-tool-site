@@ -61,6 +61,14 @@ function faqJsonLd(page: ToolPage) {
   };
 }
 
+function canonicalToolHref(page: ToolPage) {
+  const aliases: Record<string, string> = {
+    '/image-size/print-size-calculator/': '/print-size-calculator/',
+    '/image-size/dpi-calculator/': '/dpi-calculator/'
+  };
+  return aliases[page.href] || page.href;
+}
+
 function breadcrumbJsonLd(page: ToolPage) {
   return {
     '@context': 'https://schema.org',
@@ -68,7 +76,7 @@ function breadcrumbJsonLd(page: ToolPage) {
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://print.ymirtool.com/' },
       { '@type': 'ListItem', position: 2, name: 'Image Size Tools', item: 'https://print.ymirtool.com/image-size/' },
-      { '@type': 'ListItem', position: 3, name: page.title, item: `https://print.ymirtool.com${page.href}` }
+      { '@type': 'ListItem', position: 3, name: page.title, item: `https://print.ymirtool.com${canonicalToolHref(page)}` }
     ]
   };
 }

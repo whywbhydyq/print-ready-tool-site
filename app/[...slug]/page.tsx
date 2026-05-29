@@ -20,11 +20,32 @@ const extra: Record<string, string> = {
 type PageProps = { params: { slug: string[] } };
 export const dynamicParams = false;
 export function generateStaticParams() { return allRoutes.filter((href) => href !== '/').map((href) => ({ slug: href.split('/').filter(Boolean) })); }
+const aliasToPixelPath: Record<string, string> = {
+  '/print-size-calculator/': '/image-size/print-size-calculator/',
+  '/dpi-calculator/': '/image-size/dpi-calculator/'
+};
+const pixelCanonicalPath: Record<string, string> = {
+  '/image-size/print-size-calculator/': '/print-size-calculator/',
+  '/image-size/dpi-calculator/': '/dpi-calculator/'
+};
+
 export function generateMetadata({ params }: PageProps): Metadata {
   const path = '/' + params.slug.join('/') + '/';
-  const pixel = toolPageByPath(path);
+  if (path === '/kdp-cover-calculator/') {
+    const description = 'Calculate KDP paperback cover size, spine width, bleed, barcode safe zone, trim spread, and pixel canvas from trim size, page count, paper type, and PPI.';
+    return {
+      title: 'KDP Paperback Cover Size & Spine Calculator',
+      description,
+      alternates: { canonical: absoluteUrl('/kdp-cover-calculator/') },
+      openGraph: { title: 'KDP Paperback Cover Size & Spine Calculator', description, url: absoluteUrl('/kdp-cover-calculator/'), siteName: 'Print Ready Tools', type: 'website' },
+      twitter: { card: 'summary', title: 'KDP Paperback Cover Size & Spine Calculator', description }
+    };
+  }
+  const aliasTarget = aliasToPixelPath[path];
+  const pixel = toolPageByPath(aliasTarget || path);
   if (pixel) {
-    const canonicalPath = path === '/image-size/print-size-calculator/' ? '/print-size-calculator/' : path;
+    const pixelPath = aliasTarget || path;
+    const canonicalPath = pixelCanonicalPath[pixelPath] || path;
     return { title: pixel.title, description: pixel.description, alternates: { canonical: absoluteUrl(canonicalPath) }, openGraph: { title: pixel.title, description: pixel.description, url: absoluteUrl(canonicalPath), siteName: 'Print Ready Tools', type: 'website' }, twitter: { card: 'summary', title: pixel.title, description: pixel.description } };
   }
   const item = byPath(path); const title = item?.[1] || 'Print Ready Guide'; const description = item?.[2] || 'Print-ready calculator guide and checklist.';
@@ -33,11 +54,12 @@ export function generateMetadata({ params }: PageProps): Metadata {
 export default function Page({ params }: PageProps) {
   const path = '/' + params.slug.join('/') + '/';
   if (path === '/kdp-cover-calculator/') return <KdpCoverHome />;
-  const pixel = toolPageByPath(path);
+  const aliasTarget = aliasToPixelPath[path];
+  const pixel = toolPageByPath(aliasTarget || path);
   if (pixel) return <PixelFitPage page={pixel} />;
   const item = byPath(path); if (!item) notFound();
   const [, title, desc] = item;
   const body = extra[path] || `${desc} Use the related calculator to enter your own values, review formulas, copy results, and download guide templates. This page explains when the result applies, when it does not, and what official platform checks still matter.`;
   const isTrustPage = trust.some(([trustHref]) => trustHref === path);
-  return <main className="container stack"><article className="card"><h1>{title}</h1><p>{body}</p>{!isTrustPage && <><h2>Formula or rule</h2><p>Use physical size × DPI for pixel requirements. For bleed, add bleed to both sides. For safe zones, keep important content inside the marked interior region.</p><h2>Worked example</h2><p>At 300 DPI, an 8 × 10 inch print needs 2400 × 3000 pixels. A4 at 300 DPI is about 2480 × 3508 pixels.</p><h2>Limits</h2><p>Printer, paper, marketplace and platform requirements vary. Use official templates and upload previewers as the final check.</p></>}<h2>Related calculators</h2><p><Link href="/image-size/">PixelFit Image Size Tools</Link> · <Link href="/image-size/print-size-calculator/">Image Print Size Calculator</Link> · <Link href="/image-size/dpi-calculator/">DPI / PPI Calculator</Link> · <Link href="/image-size/a4-size-in-pixels/">A4 Size in Pixels</Link> · <Link href="/image-size/youtube-banner-safe-area/">YouTube Banner Safe Area</Link></p><p className="small muted">Last updated 2026-05-24.</p></article></main>;
+  return <main className="container stack"><article className="card"><h1>{title}</h1><p>{body}</p>{!isTrustPage && <><h2>Formula or rule</h2><p>Use physical size × DPI for pixel requirements. For bleed, add bleed to both sides. For safe zones, keep important content inside the marked interior region.</p><h2>Worked example</h2><p>At 300 DPI, an 8 × 10 inch print needs 2400 × 3000 pixels. A4 at 300 DPI is about 2480 × 3508 pixels.</p><h2>Limits</h2><p>Printer, paper, marketplace and platform requirements vary. Use official templates and upload previewers as the final check.</p></>}<h2>Related calculators</h2><p><Link href="/image-size/">PixelFit Image Size Tools</Link> · <Link href="/print-size-calculator/">Image Print Size Calculator</Link> · <Link href="/dpi-calculator/">DPI / PPI Calculator</Link> · <Link href="/image-size/a4-size-in-pixels/">A4 Size in Pixels</Link> · <Link href="/image-size/youtube-banner-safe-area/">YouTube Banner Safe Area</Link></p><p className="small muted">Last updated 2026-05-24.</p></article></main>;
 }

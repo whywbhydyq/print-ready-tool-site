@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { allRoutes } from '@/src/lib/content';
 import { absoluteUrl } from '@/src/lib/site';
 
-const lastModified = new Date('2026-05-24');
+const lastModified = new Date('2026-05-30');
 
 const primaryRoutes = new Set([
   '/',
@@ -18,8 +18,13 @@ const lowerPriorityImageRoutes = new Set([
   '/image-size/image-print-quality-checker/'
 ]);
 
+const nonCanonicalRoutes = new Set([
+  '/image-size/print-size-calculator/',
+  '/image-size/dpi-calculator/'
+]);
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return allRoutes.map((path) => ({
+  return allRoutes.filter((path) => !nonCanonicalRoutes.has(path)).map((path) => ({
     url: absoluteUrl(path),
     lastModified,
     changeFrequency: path === '/' ? 'weekly' : path.includes('calculator') || path.includes('safe') ? 'weekly' : 'monthly',

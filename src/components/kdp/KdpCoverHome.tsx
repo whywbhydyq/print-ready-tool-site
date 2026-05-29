@@ -10,6 +10,38 @@ import { KdpMetricStrip } from '@/src/components/kdp/KdpMetricStrip';
 import { KdpResultActions } from '@/src/components/kdp/KdpResultActions';
 
 const defaultPreset = kdpPresetById('six-by-nine-paperback');
+const kdpHomeUrl = 'https://print.ymirtool.com/';
+const kdpCalculatorUrl = 'https://print.ymirtool.com/kdp-cover-calculator/';
+
+const kdpJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      name: 'KDP Cover Size & Spine Calculator',
+      applicationCategory: 'DesignApplication',
+      operatingSystem: 'Any',
+      url: kdpCalculatorUrl,
+      description: 'Calculate KDP paperback cover file size, spine width, trim spread, bleed, barcode safe zone, and pixel canvas in the browser.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: [
+        { '@type': 'Question', name: 'How do I calculate KDP spine width?', acceptedAnswer: { '@type': 'Answer', text: 'Choose trim size, page count, interior type, and paper type. The calculator estimates spine width from page count and the selected paper multiplier.' } },
+        { '@type': 'Question', name: 'Does KDP cover size include bleed?', acceptedAnswer: { '@type': 'Answer', text: 'The cover file size includes bleed on the outside edges. The calculator also shows the trim spread before bleed so you can compare both values.' } },
+        { '@type': 'Question', name: 'What pixel size should a KDP cover be?', acceptedAnswer: { '@type': 'Answer', text: 'The pixel canvas is the cover file size multiplied by the selected PPI, commonly 300 PPI for print planning.' } }
+      ]
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Print Ready Tools', item: kdpHomeUrl },
+        { '@type': 'ListItem', position: 2, name: 'KDP Cover Calculator', item: kdpCalculatorUrl }
+      ]
+    }
+  ]
+};
 
 function presetToInput(presetId: string): KdpCoverInput {
   const preset = kdpPresetById(presetId);
@@ -86,6 +118,7 @@ export function KdpCoverHome() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(kdpJsonLd) }} />
       <main className="kdp-home" aria-labelledby="kdp-home-title">
         <section className="kdp-hero-compact">
           <h1 id="kdp-home-title">KDP paperback cover size &amp; spine calculator</h1>
@@ -102,9 +135,7 @@ export function KdpCoverHome() {
             <h2>1. Enter your book specs</h2>
             <div className="kdp-form-grid">
               <label className="kdp-field">Binding type
-                <select value="paperback" aria-label="Binding type" onChange={() => undefined}>
-                  <option value="paperback">Paperback</option>
-                </select>
+                <span className="kdp-readonly-field" role="text">Paperback only</span>
               </label>
               <label className="kdp-field">Interior type
                 <select value={draftInput.interior} onChange={(event) => {
