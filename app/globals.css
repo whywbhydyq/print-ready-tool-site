@@ -18,3 +18,48 @@
 .kdp-home{grid-template-rows:76px minmax(430px,1fr) 78px;gap:8px;padding:6px 28px 10px}
 .kdp-hero-compact{gap:3px}.kdp-hero-compact h1{font-size:clamp(1.48rem,1.95vw,2.05rem);line-height:1.02}.kdp-hero-compact p{font-size:clamp(.8rem,.94vw,.9rem);line-height:1.22;max-width:720px}.kdp-trust-row{font-size:.74rem;gap:12px}.kdp-panel{padding:12px 14px}.kdp-panel h2{font-size:1rem;margin-bottom:8px}.kdp-input-panel{gap:7px}.kdp-field input,.kdp-field select{height:31px;min-height:31px}.kdp-field small{font-size:.68rem}.kdp-form-grid{gap:7px 11px}.kdp-inline-field{grid-template-columns:1fr 62px}.kdp-inline-field span,.kdp-range-note{height:31px}.kdp-primary-button{height:38px;min-height:38px}.kdp-secondary-actions button{height:32px;min-height:32px}.kdp-preview-panel{grid-template-rows:auto 60px 16px 208px 20px 104px;gap:6px}.kdp-metric-strip{gap:7px}.kdp-metric{padding:6px 8px}.kdp-metric strong{font-size:clamp(.92rem,1.08vw,1.08rem)}.kdp-legend-row{font-size:.68rem;gap:18px}.kdp-preview-frame,.kdp-preview-frame svg{height:208px;max-height:208px}.kdp-result-row{grid-template-columns:1fr minmax(260px,.82fr);gap:9px}.kdp-details-card,.kdp-actions-card{padding:7px 10px}.kdp-details-card h3,.kdp-actions-card h3{font-size:.82rem;margin-bottom:3px}.kdp-details-card ul{font-size:.68rem;line-height:1.12;gap:1px}.kdp-actions-card{grid-template-rows:auto repeat(5,21px) auto;gap:3px}.kdp-action-button{height:21px;min-height:21px;font-size:.68rem}.kdp-status-line,.kdp-warning-line{font-size:.7rem;padding:2px 8px}.kdp-presets{height:78px;min-height:78px;padding:7px 12px;gap:5px}.kdp-presets h2{font-size:.94rem}.kdp-presets p{font-size:.66rem}.kdp-preset-row{gap:8px}.kdp-preset-card{height:44px;min-height:44px;grid-template-columns:24px minmax(0,1fr) auto;padding:5px 8px}.kdp-mini-cover{width:20px;height:28px}.kdp-preset-card strong{font-size:.76rem}.kdp-preset-card small{font-size:.61rem}.kdp-preset-card em{font-size:.56rem}.kdp-more-tools-card{max-width:1180px;margin:0 auto;padding:18px}.kdp-below-fold{padding-top:16px}.kdp-related-grid{gap:12px}.kdp-related-grid a{padding:6px 8px;font-size:.82rem}.kdp-related-grid a span{font-size:.7rem}
 @media(max-width:1100px){.kdp-home{display:block;padding:14px}.kdp-preview-panel{grid-template-rows:auto auto auto 208px auto auto}.kdp-preview-frame,.kdp-preview-frame svg{height:208px;max-height:208px}.kdp-presets{height:auto;min-height:0;margin-top:12px}}
+
+/* KDP v4: remove wasted top space in the right preview panel */
+.kdp-preview-panel{
+  align-content:start;
+  align-items:start;
+  grid-template-rows:auto 58px 14px 208px auto 102px;
+  gap:5px;
+}
+.kdp-preview-panel>h2{
+  margin:0 0 2px!important;
+  align-self:start;
+}
+.kdp-preview-panel>.kdp-metric-strip{
+  width:100%;
+  align-self:start;
+}
+.kdp-preview-panel>.kdp-legend-row{
+  width:100%;
+  align-self:start;
+}
+.kdp-preview-panel>.kdp-preview-frame{
+  width:100%;
+  align-self:start;
+}
+.kdp-preview-panel>.kdp-status-line,
+.kdp-preview-panel>.kdp-warning-line{
+  width:100%;
+  align-self:start;
+}
+.kdp-preview-panel>.kdp-result-row{
+  width:100%;
+  align-self:start;
+}
+.kdp-metric{
+  min-height:58px;
+}
+.kdp-result-row{
+  min-height:102px;
+}
+@media(max-width:1100px){
+  .kdp-preview-panel{
+    align-content:start;
+    grid-template-rows:auto auto auto 208px auto auto;
+  }
+}
