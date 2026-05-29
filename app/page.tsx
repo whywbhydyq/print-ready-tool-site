@@ -1,7 +1,22 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
-import { coreTools, guides, templates } from '@/src/lib/content';
+import { KdpCoverHome } from '@/src/components/kdp/KdpCoverHome';
 import { siteUrl } from '@/src/lib/site';
+
 const description = 'Calculate KDP paperback cover size, spine width, bleed, barcode safe zone, and pixel canvas from trim size, page count, paper type, and interior type.';
-export const metadata: Metadata = { title: 'KDP Cover Size & Spine Calculator - Print Ready Tool', description, alternates: { canonical: siteUrl }, openGraph: { title: 'KDP Cover Size & Spine Calculator', description, url: siteUrl, siteName: 'Print Ready Tools', type: 'website' } };
-export default function Home() { return <main className="container stack"><section className="hero"><p className="small"><strong>Free KDP print-ready checker</strong></p><h1>KDP Cover Size & Spine Checker</h1><p>Calculate KDP paperback cover size, spine width, bleed, barcode safe zone, image pixels, DPI/PPI, and print dimensions before uploading or printing.</p></section><section className="grid">{coreTools.map(([href, title, desc]) => <Link className="card" href={href} key={href}><h2>{title}</h2><p className="muted">{desc}</p></Link>)}</section><section className="grid"><div className="card"><h2>KDP Guides</h2>{guides.filter(([, title]) => title.includes('KDP')).map(([href, title]) => <p key={href}><Link href={href}>{title}</Link></p>)}</div><div className="card"><h2>Templates</h2>{templates.map(([href, title, desc]) => <p key={href}><Link href={href}>{title}</Link><br /><span className="muted small">{desc}</span></p>)}</div></section></main>; }
+
+export const metadata: Metadata = {
+  title: 'KDP Cover Size & Spine Calculator - Print Ready Tool',
+  description,
+  alternates: { canonical: siteUrl },
+  openGraph: {
+    title: 'KDP Cover Size & Spine Calculator',
+    description,
+    url: siteUrl,
+    siteName: 'Print Ready Tools',
+    type: 'website'
+  }
+};
+
+export default function Home() {
+  return <KdpCoverHome />;
+}

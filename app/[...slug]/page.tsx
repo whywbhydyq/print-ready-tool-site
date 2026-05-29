@@ -5,6 +5,7 @@ import { allRoutes, byPath, trust } from '@/src/lib/content';
 import { absoluteUrl } from '@/src/lib/site';
 import { toolPageByPath } from '@/src/data/image-tools';
 import { PixelFitPage } from '@/src/components/PixelFitClient';
+import { KdpCoverHome } from '@/src/components/kdp/KdpCoverHome';
 const extra: Record<string, string> = {
   '/about/': 'Print Ready Tools provides free browser-based calculators for print sizes, DPI, bleed, safe zones, KDP covers, Etsy printable files, and PixelFit image size tools. We are independent and not affiliated with Amazon, Etsy, Canva, Adobe, YouTube, TikTok, LinkedIn or X.',
   '/contact/': 'For corrections, source updates or feature requests, contact aren.ymir@gmail.com. Do not send files containing private customer data.',
@@ -31,6 +32,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
 }
 export default function Page({ params }: PageProps) {
   const path = '/' + params.slug.join('/') + '/';
+  if (path === '/kdp-cover-calculator/') return <KdpCoverHome />;
   const pixel = toolPageByPath(path);
   if (pixel) return <PixelFitPage page={pixel} />;
   const item = byPath(path); if (!item) notFound();
