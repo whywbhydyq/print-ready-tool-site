@@ -22,7 +22,10 @@ export function generateStaticParams() { return allRoutes.filter((href) => href 
 export function generateMetadata({ params }: PageProps): Metadata {
   const path = '/' + params.slug.join('/') + '/';
   const pixel = toolPageByPath(path);
-  if (pixel) return { title: pixel.title, description: pixel.description, alternates: { canonical: absoluteUrl(path) }, openGraph: { title: pixel.title, description: pixel.description, url: absoluteUrl(path), siteName: 'Print Ready Tools', type: 'website' }, twitter: { card: 'summary', title: pixel.title, description: pixel.description } };
+  if (pixel) {
+    const canonicalPath = path === '/image-size/print-size-calculator/' ? '/print-size-calculator/' : path;
+    return { title: pixel.title, description: pixel.description, alternates: { canonical: absoluteUrl(canonicalPath) }, openGraph: { title: pixel.title, description: pixel.description, url: absoluteUrl(canonicalPath), siteName: 'Print Ready Tools', type: 'website' }, twitter: { card: 'summary', title: pixel.title, description: pixel.description } };
+  }
   const item = byPath(path); const title = item?.[1] || 'Print Ready Guide'; const description = item?.[2] || 'Print-ready calculator guide and checklist.';
   return { title, description, alternates: { canonical: absoluteUrl(path) }, openGraph: { title, description, url: absoluteUrl(path), siteName: 'Print Ready Tools', type: 'article' } };
 }

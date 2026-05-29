@@ -3,13 +3,13 @@ import { toolPages } from '@/src/data/image-tools';
 export type RouteTuple = readonly [string, string, string];
 
 export const coreTools = [
+  ['/kdp-cover-calculator/', 'KDP Cover Size & Spine Calculator', 'Calculate paperback cover size, spine width, bleed, barcode safe zone and pixel canvas.'],
+  ['/kdp-interior-bleed-calculator/', 'KDP Interior Bleed Calculator', 'Calculate KDP manuscript page size with and without bleed.'],
   ['/image-size/', 'PixelFit Image Size Tools', 'Aspect ratio, DPI, A4 pixels and social safe-zone overlays for local image checks.'],
   ['/print-size-calculator/', 'Print Size Calculator', 'Convert pixels to inches, centimetres, millimetres and required pixels by DPI.'],
   ['/dpi-calculator/', 'DPI Calculator', 'Calculate effective DPI, required pixels and maximum print size for artwork.'],
   ['/image-print-quality-checker/', 'Image Print Quality Checker', 'Check a local image’s pixel dimensions against a target print size.'],
   ['/bleed-safe-zone-calculator/', 'Bleed & Safe Zone Calculator', 'Calculate trim, full bleed canvas, safe area and pixels.'],
-  ['/kdp-cover-calculator/', 'KDP Cover Size Calculator', 'Calculate paperback cover size, spine width and pixel canvas.'],
-  ['/kdp-interior-bleed-calculator/', 'KDP Interior Bleed Calculator', 'Calculate KDP manuscript page size with and without bleed.'],
   ['/etsy-printable-size-calculator/', 'Etsy Printable Size Pack Calculator', 'Generate ratio pack sizes and buyer instruction text.'],
   ['/common-print-sizes/', 'Common Print Sizes Library', 'Reference inches, cm, mm and pixels for common sizes.']
 ] as const satisfies readonly RouteTuple[];
