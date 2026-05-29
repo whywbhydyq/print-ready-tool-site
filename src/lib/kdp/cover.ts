@@ -41,23 +41,24 @@ export type KdpCoverResult = {
 
 const CM_PER_INCH = 2.54;
 
-// Planning multipliers for the first-screen calculator. The UI keeps a clear
-// KDP Previewer disclaimer because platform templates remain the final check.
+// KDP paperback spine multipliers from Amazon KDP's paperback cover
+// requirements. Values are inches per page. The calculator remains an
+// independent planning aid; final files should still be verified in KDP Previewer.
 const SPINE_MULTIPLIERS: Record<InteriorType, Record<PaperType, number>> = {
   'black-white': {
-    white: 0.003375,
-    cream: 0.0035,
-    color: 0.003375
+    white: 0.002252,
+    cream: 0.0025,
+    color: 0.002252
   },
   'standard-color': {
-    white: 0.00365,
-    cream: 0.00365,
-    color: 0.00365
+    white: 0.002252,
+    cream: 0.002252,
+    color: 0.002252
   },
   'premium-color': {
-    white: 0.0042,
-    cream: 0.0042,
-    color: 0.0042
+    white: 0.002347,
+    cream: 0.002347,
+    color: 0.002347
   }
 };
 

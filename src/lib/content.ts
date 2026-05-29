@@ -1,4 +1,5 @@
 import { toolPages } from '@/src/data/image-tools';
+import { articleRouteTuples } from '@/src/lib/printArticles';
 
 export type RouteTuple = readonly [string, string, string];
 
@@ -28,6 +29,20 @@ export const guides = [
   ['/guides/kdp-6x9-cover-size/', 'KDP 6x9 Cover Size', 'Calculate a 6x9 paperback cover with spine and bleed.'],
   ['/guides/kdp-spine-width-calculator/', 'KDP Spine Width Calculator', 'KDP spine width equals page count times paper multiplier.'],
   ['/guides/kdp-paperback-cover-rejection-checklist/', 'KDP Paperback Cover Rejection Checklist', 'Avoid common cover upload mistakes.'],
+  ['/guides/kdp-paperback-cover-size-formula/', 'KDP Paperback Cover Size Formula', 'Calculate back cover, spine, front cover and bleed as one continuous cover file.'],
+  ['/guides/kdp-cover-size-with-bleed/', 'KDP Cover Size With Bleed', 'Understand how bleed changes the final KDP paperback cover canvas.'],
+  ['/guides/kdp-cover-pixel-size-300-dpi/', 'KDP Cover Pixel Size at 300 PPI', 'Convert KDP cover dimensions in inches into a print-ready pixel canvas.'],
+  ['/guides/kdp-barcode-safe-zone/', 'KDP Barcode Safe Zone', 'Plan the back-cover barcode area before placing text or artwork.'],
+  ['/guides/kdp-trim-size-page-count/', 'KDP Trim Size and Page Count Guide', 'Choose trim size and understand page-count limits before designing a cover.'],
+  ['/guides/kdp-cover-template-guide/', 'KDP Cover Template Guide', 'Use official templates and guide layers for bleed, trim, spine and barcode planning.'],
+  ['/guides/kdp-spine-text-requirements/', 'KDP Spine Text Requirements', 'Know when paperback spine text is allowed and how to keep it inside the spine.'],
+  ['/guides/kdp-paperback-cover-pdf-requirements/', 'KDP Paperback Cover PDF Requirements', 'Prepare a one-piece back-spine-front cover PDF with fonts and layers handled correctly.'],
+  ['/guides/kdp-cover-safe-margin/', 'KDP Cover Safe Margin Guide', 'Keep important text and art away from trim, spine and barcode risk areas.'],
+  ['/guides/kdp-own-barcode-vs-amazon-barcode/', 'KDP Own Barcode vs Amazon Barcode', 'Compare uploading your own ISBN barcode with leaving space for KDP to place one.'],
+  ['/guides/kdp-cover-300-dpi-image-quality/', 'KDP Cover Image Quality and 300 DPI', 'Check image resolution, effective DPI and pixel quality before uploading a paperback cover.'],
+  ['/guides/kdp-cover-color-cmyk-rgb-guide/', 'KDP Cover Color, CMYK, RGB and Spot Colors', 'Avoid color-space and spot-color issues before exporting a KDP cover PDF.'],
+  ['/guides/kdp-right-to-left-cover-layout/', 'KDP Right-to-Left Cover Layout', 'Understand how reading direction changes front cover, back cover and barcode placement.'],
+  ['/guides/kdp-low-content-book-cover-setup/', 'KDP Low-Content Book Cover Setup', 'Set up paperback covers for journals, notebooks, planners and workbooks.'],
   ['/guides/etsy-printable-wall-art-sizes/', 'Etsy Printable Wall Art Sizes', 'Use multiple ratios so buyers can print standard frames.'],
   ['/guides/etsy-printable-ratio-guide/', 'Etsy Printable Ratio Guide', '2:3, 3:4, 4:5, 5:7, 11:14, ISO and square explained.']
 ] as const satisfies readonly RouteTuple[];
@@ -52,6 +67,7 @@ export const staticContentRoutes = [...coreTools, ...guideRoots, ...guides, ...t
 export const allRoutes = [
   '/',
   ...staticContentRoutes.map((route) => route[0]),
+  ...articleRouteTuples.map((route) => route[0]),
   ...toolPages.map((tool) => tool.href)
 ].filter((value, index, array) => array.indexOf(value) === index);
 

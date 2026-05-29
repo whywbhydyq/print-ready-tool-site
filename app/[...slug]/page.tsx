@@ -6,6 +6,8 @@ import { absoluteUrl } from '@/src/lib/site';
 import { toolPageByPath } from '@/src/data/image-tools';
 import { PixelFitPage } from '@/src/components/PixelFitClient';
 import { KdpCoverHome } from '@/src/components/kdp/KdpCoverHome';
+import { articleByPath } from '@/src/lib/printArticles';
+import { PrintArticlePage } from '@/src/components/PrintArticlePage';
 const extra: Record<string, string> = {
   '/about/': 'Print Ready Tools provides free browser-based calculators for print sizes, DPI, bleed, safe zones, KDP covers, Etsy printable files, and PixelFit image size tools. We are independent and not affiliated with Amazon, Etsy, Canva, Adobe, YouTube, TikTok, LinkedIn or X.',
   '/contact/': 'For corrections, source updates or feature requests, contact aren.ymir@gmail.com. Do not send files containing private customer data.',
@@ -41,6 +43,16 @@ export function generateMetadata({ params }: PageProps): Metadata {
       twitter: { card: 'summary', title: 'KDP Paperback Cover Size & Spine Calculator', description }
     };
   }
+  const article = articleByPath(path);
+  if (article) {
+    return {
+      title: article.title,
+      description: article.description,
+      alternates: { canonical: absoluteUrl(article.path) },
+      openGraph: { title: article.title, description: article.description, url: absoluteUrl(article.path), siteName: 'Print Ready Tools', type: 'article' },
+      twitter: { card: 'summary', title: article.title, description: article.description }
+    };
+  }
   const aliasTarget = aliasToPixelPath[path];
   const pixel = toolPageByPath(aliasTarget || path);
   if (pixel) {
@@ -54,6 +66,8 @@ export function generateMetadata({ params }: PageProps): Metadata {
 export default function Page({ params }: PageProps) {
   const path = '/' + params.slug.join('/') + '/';
   if (path === '/kdp-cover-calculator/') return <KdpCoverHome />;
+  const article = articleByPath(path);
+  if (article) return <PrintArticlePage article={article} />;
   const aliasTarget = aliasToPixelPath[path];
   const pixel = toolPageByPath(aliasTarget || path);
   if (pixel) return <PixelFitPage page={pixel} />;

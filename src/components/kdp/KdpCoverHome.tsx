@@ -28,7 +28,7 @@ const kdpJsonLd = {
     {
       '@type': 'FAQPage',
       mainEntity: [
-        { '@type': 'Question', name: 'How do I calculate KDP spine width?', acceptedAnswer: { '@type': 'Answer', text: 'Choose trim size, page count, interior type, and paper type. The calculator estimates spine width from page count and the selected paper multiplier.' } },
+        { '@type': 'Question', name: 'How do I calculate KDP spine width?', acceptedAnswer: { '@type': 'Answer', text: 'Choose trim size, page count, interior type, and paper type. The calculator estimates spine width from page count and the current KDP paperback spine multipliers for the selected paper option.' } },
         { '@type': 'Question', name: 'Does KDP cover size include bleed?', acceptedAnswer: { '@type': 'Answer', text: 'The cover file size includes bleed on the outside edges. The calculator also shows the trim spread before bleed so you can compare both values.' } },
         { '@type': 'Question', name: 'What pixel size should a KDP cover be?', acceptedAnswer: { '@type': 'Answer', text: 'The pixel canvas is the cover file size multiplied by the selected PPI, commonly 300 PPI for print planning.' } }
       ]
@@ -224,6 +224,7 @@ export function KdpCoverHome() {
                   <li>At {result.ppi} PPI, use {result.pixelWidth} × {result.pixelHeight} px.</li>
                   <li>Back and front cover: {formatInches(result.trimWidthIn, 2)} × {formatInches(result.trimHeightIn, 2)} in each.</li>
                   <li>Spine {formatInches(result.spineWidthIn, 3)} in · Bleed {formatInches(result.bleedIn, 3)} in · Final check in KDP Previewer.</li>
+                  <li>Spine uses KDP paperback multipliers: B&W white/standard color 0.002252, B&W cream 0.0025, premium color 0.002347.</li>
                 </ul>
               </div>
               <KdpResultActions result={result} summary={summary} disabled={!calculated} />

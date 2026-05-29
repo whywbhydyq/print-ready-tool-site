@@ -21,9 +21,11 @@ export const metadata: Metadata = {
 
 const kdpLinks = [
   ['/kdp-cover-calculator/', 'KDP cover size calculator', 'Calculate paperback cover file size, spine width, bleed, barcode safe zone, and pixel canvas.'],
+  ['/guides/kdp-paperback-cover-size-formula/', 'KDP cover size formula', 'Back cover + spine + front cover + bleed, explained step by step.'],
+  ['/guides/kdp-cover-size-with-bleed/', 'KDP cover size with bleed', 'Understand why the cover file is larger than the trim spread.'],
   ['/guides/kdp-spine-width-calculator/', 'KDP spine width calculator', 'Understand spine width from page count and paper type.'],
-  ['/guides/kdp-6x9-cover-size/', 'KDP 6×9 cover size guide', 'Load the common 6×9 paperback setup and check file dimensions.'],
-  ['/templates/kdp-cover-setup-checklist/', 'KDP cover setup checklist', 'Use a compact checklist before uploading to KDP Previewer.']
+  ['/guides/kdp-cover-pixel-size-300-dpi/', 'KDP cover pixels at 300 PPI', 'Convert the calculated cover size into a design canvas.'],
+  ['/guides/kdp-barcode-safe-zone/', 'KDP barcode safe zone', 'Keep back-cover text and art out of the barcode area.']
 ] as const;
 
 const jsonLd = {
@@ -58,7 +60,7 @@ export default function Home() {
         <p className="lede">Start with the KDP paperback cover calculator, then use related tools for print size, DPI, safe zones, and marketplace-ready files.</p>
         <div className="buttonrow">
           <Link className="primary-link" href="/kdp-cover-calculator/">Open KDP cover calculator</Link>
-          <Link className="secondary-link" href="/image-size/print-size-calculator/">Image print size calculator</Link>
+          <Link className="secondary-link" href="/print-size-calculator/">Image print size calculator</Link>
         </div>
       </section>
 
@@ -86,8 +88,9 @@ export default function Home() {
           {coreTools.slice(5, 6).map(([href, title, desc]) => <p key={href}><Link href={href}>{title}</Link><br /><span className="small muted">{desc}</span></p>)}
         </div>
         <div className="card">
-          <h2>Templates and guides</h2>
-          {[...templates.slice(0, 3), ...guides.filter(([, title]) => title.includes('KDP')).slice(0, 2)].map(([href, title, desc]) => <p key={href}><Link href={href}>{title}</Link><br /><span className="small muted">{desc}</span></p>)}
+          <h2>KDP article library</h2>
+          {guides.filter(([, title]) => title.includes('KDP')).map(([href, title, desc]) => <p key={href}><Link href={href}>{title}</Link><br /><span className="small muted">{desc}</span></p>)}
+          {templates.slice(1, 2).map(([href, title, desc]) => <p key={href}><Link href={href}>{title}</Link><br /><span className="small muted">{desc}</span></p>)}
         </div>
       </section>
     </main>
