@@ -11,7 +11,7 @@ import { KdpResultActions } from '@/src/components/kdp/KdpResultActions';
 
 const defaultPreset = kdpPresetById('six-by-nine-paperback');
 const kdpHomeUrl = 'https://print.ymirtool.com/';
-const kdpCalculatorUrl = 'https://print.ymirtool.com/kdp-cover-calculator/';
+const kdpCalculatorUrl = kdpHomeUrl;
 
 const kdpJsonLd = {
   '@context': 'https://schema.org',
@@ -36,8 +36,7 @@ const kdpJsonLd = {
     {
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Print Ready Tools', item: kdpHomeUrl },
-        { '@type': 'ListItem', position: 2, name: 'KDP Cover Calculator', item: kdpCalculatorUrl }
+        { '@type': 'ListItem', position: 1, name: 'KDP Cover Calculator', item: kdpHomeUrl }
       ]
     }
   ]

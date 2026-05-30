@@ -2,6 +2,11 @@ import Link from 'next/link';
 import type { PrintArticle } from '@/src/lib/printArticles';
 import { absoluteUrl } from '@/src/lib/site';
 
+
+function canonicalInternalHref(href: string) {
+  return href === '/kdp-cover-calculator/' ? '/' : href;
+}
+
 function articleJsonLd(article: PrintArticle) {
   return {
     '@context': 'https://schema.org',
@@ -45,7 +50,7 @@ export function PrintArticlePage({ article }: { article: PrintArticle }) {
         <h1>{article.title}</h1>
         <p className="lede">{article.description}</p>
         <p className="buttonrow">
-          <Link className="primary-link" href={article.primaryCta.href}>{article.primaryCta.label}</Link>
+          <Link className="primary-link" href={canonicalInternalHref(article.primaryCta.href)}>{article.primaryCta.label}</Link>
           <Link className="secondary-link" href="/guides/">Browse print guides</Link>
         </p>
         {article.sections.map((section) => (
@@ -77,7 +82,7 @@ export function PrintArticlePage({ article }: { article: PrintArticle }) {
       <section className="grid print-article-support" aria-label="Article support links">
         <div className="card">
           <h2>Related tools and guides</h2>
-          {article.related.map((item) => <p key={item.href}><Link href={item.href}>{item.label}</Link></p>)}
+          {article.related.map((item) => <p key={item.href}><Link href={canonicalInternalHref(item.href)}>{item.label}</Link></p>)}
         </div>
         <div className="card">
           <h2>Quick FAQ</h2>

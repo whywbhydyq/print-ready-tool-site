@@ -5,7 +5,6 @@ import { allRoutes, byPath, trust } from '@/src/lib/content';
 import { absoluteUrl } from '@/src/lib/site';
 import { toolPageByPath } from '@/src/data/image-tools';
 import { PixelFitPage } from '@/src/components/PixelFitClient';
-import { KdpCoverHome } from '@/src/components/kdp/KdpCoverHome';
 import { articleByPath } from '@/src/lib/printArticles';
 import { PrintArticlePage } from '@/src/components/PrintArticlePage';
 const extra: Record<string, string> = {
@@ -33,16 +32,6 @@ const pixelCanonicalPath: Record<string, string> = {
 
 export function generateMetadata({ params }: PageProps): Metadata {
   const path = '/' + params.slug.join('/') + '/';
-  if (path === '/kdp-cover-calculator/') {
-    const description = 'Calculate KDP paperback cover size, spine width, bleed, barcode safe zone, trim spread, and pixel canvas from trim size, page count, paper type, and PPI.';
-    return {
-      title: 'KDP Paperback Cover Size & Spine Calculator',
-      description,
-      alternates: { canonical: absoluteUrl('/kdp-cover-calculator/') },
-      openGraph: { title: 'KDP Paperback Cover Size & Spine Calculator', description, url: absoluteUrl('/kdp-cover-calculator/'), siteName: 'Print Ready Tools', type: 'website' },
-      twitter: { card: 'summary', title: 'KDP Paperback Cover Size & Spine Calculator', description }
-    };
-  }
   const article = articleByPath(path);
   if (article) {
     return {
@@ -65,7 +54,6 @@ export function generateMetadata({ params }: PageProps): Metadata {
 }
 export default function Page({ params }: PageProps) {
   const path = '/' + params.slug.join('/') + '/';
-  if (path === '/kdp-cover-calculator/') return <KdpCoverHome />;
   const article = articleByPath(path);
   if (article) return <PrintArticlePage article={article} />;
   const aliasTarget = aliasToPixelPath[path];

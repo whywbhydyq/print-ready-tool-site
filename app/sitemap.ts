@@ -6,7 +6,6 @@ const lastModified = new Date('2026-05-30');
 
 const primaryRoutes = new Set([
   '/',
-  '/kdp-cover-calculator/',
   '/guides/kdp-spine-width-calculator/',
   '/guides/kdp-paperback-cover-rejection-checklist/',
   '/templates/kdp-cover-setup-checklist/',
@@ -33,6 +32,7 @@ const lowerPriorityImageRoutes = new Set([
 ]);
 
 const nonCanonicalRoutes = new Set([
+  '/kdp-cover-calculator/',
   '/image-size/print-size-calculator/',
   '/image-size/dpi-calculator/'
 ]);

@@ -4,7 +4,7 @@ import { articleRouteTuples } from '@/src/lib/printArticles';
 export type RouteTuple = readonly [string, string, string];
 
 export const coreTools = [
-  ['/kdp-cover-calculator/', 'KDP Cover Size & Spine Calculator', 'Calculate paperback cover size, spine width, bleed, barcode safe zone and pixel canvas.'],
+  ['/', 'KDP Cover Size & Spine Calculator', 'Calculate paperback cover size, spine width, bleed, barcode safe zone and pixel canvas.'],
   ['/kdp-interior-bleed-calculator/', 'KDP Interior Bleed Calculator', 'Calculate KDP manuscript page size with and without bleed.'],
   ['/image-size/', 'PixelFit Image Size Tools', 'Aspect ratio, DPI, A4 pixels and social safe-zone overlays for local image checks.'],
   ['/print-size-calculator/', 'Print Size Calculator', 'Convert pixels to inches, centimetres, millimetres and required pixels by DPI.'],

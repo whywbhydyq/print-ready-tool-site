@@ -2,6 +2,7 @@
 const nextConfig = {
   async redirects() {
     return [
+      { source: '/kdp-cover-calculator', destination: '/', permanent: true },
       { source: '/image-size/print-size-calculator', destination: '/print-size-calculator', permanent: true },
       { source: '/image-size/dpi-calculator', destination: '/dpi-calculator', permanent: true }
     ];
@@ -11,12 +12,6 @@ const nextConfig = {
   experimental: {
     cpus: 1,
     workerThreads: false
-  },
-  webpack: (config, { dev }) => {
-    if (!dev && config.optimization) {
-      config.optimization.minimize = false;
-    }
-    return config;
   }
 };
 export default nextConfig;

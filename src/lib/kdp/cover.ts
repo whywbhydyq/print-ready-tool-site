@@ -14,6 +14,12 @@ export type KdpCoverInput = {
   showBarcode: boolean;
 };
 
+export type KdpPageRange = {
+  min: number;
+  max: number;
+  source: 'kdp-common-trim' | 'kdp-large-trim' | 'custom-estimate' | 'hardcover-disabled';
+};
+
 export type KdpCoverResult = {
   trimWidthIn: number;
   trimHeightIn: number;
@@ -32,10 +38,7 @@ export type KdpCoverResult = {
     xIn: number;
     yIn: number;
   };
-  pageRange: {
-    min: number;
-    max: number;
-  };
+  pageRange: KdpPageRange;
   warnings: string[];
 };
 
@@ -62,6 +65,42 @@ const SPINE_MULTIPLIERS: Record<InteriorType, Record<PaperType, number>> = {
   }
 };
 
+const COMMON_PAPERBACK_PAGE_RANGES: Record<InteriorType, Record<PaperType, KdpPageRange>> = {
+  'black-white': {
+    white: { min: 24, max: 828, source: 'kdp-common-trim' },
+    cream: { min: 24, max: 776, source: 'kdp-common-trim' },
+    color: { min: 24, max: 828, source: 'kdp-common-trim' }
+  },
+  'standard-color': {
+    white: { min: 72, max: 600, source: 'kdp-common-trim' },
+    cream: { min: 72, max: 600, source: 'kdp-common-trim' },
+    color: { min: 72, max: 600, source: 'kdp-common-trim' }
+  },
+  'premium-color': {
+    white: { min: 24, max: 828, source: 'kdp-common-trim' },
+    cream: { min: 24, max: 828, source: 'kdp-common-trim' },
+    color: { min: 24, max: 828, source: 'kdp-common-trim' }
+  }
+};
+
+const LARGE_85_PAPERBACK_PAGE_RANGES: Record<InteriorType, Record<PaperType, KdpPageRange>> = {
+  'black-white': {
+    white: { min: 24, max: 590, source: 'kdp-large-trim' },
+    cream: { min: 24, max: 550, source: 'kdp-large-trim' },
+    color: { min: 24, max: 590, source: 'kdp-large-trim' }
+  },
+  'standard-color': {
+    white: { min: 72, max: 600, source: 'kdp-large-trim' },
+    cream: { min: 72, max: 600, source: 'kdp-large-trim' },
+    color: { min: 72, max: 600, source: 'kdp-large-trim' }
+  },
+  'premium-color': {
+    white: { min: 24, max: 590, source: 'kdp-large-trim' },
+    cream: { min: 24, max: 590, source: 'kdp-large-trim' },
+    color: { min: 24, max: 590, source: 'kdp-large-trim' }
+  }
+};
+
 export function roundTo(value: number, decimals = 3): number {
   const factor = 10 ** decimals;
   return Math.round((value + Number.EPSILON) * factor) / factor;
@@ -83,6 +122,26 @@ export function getPaperMultiplier(interior: InteriorType, paper: PaperType): nu
   return byPaper[paper] || byPaper.white;
 }
 
+function pageRangeFromTable(table: Record<InteriorType, Record<PaperType, KdpPageRange>>, interior: InteriorType, paper: PaperType): KdpPageRange {
+  const byPaper = table[interior] || table['black-white'];
+  return byPaper[paper] || byPaper.white;
+}
+
+function isLarge85Trim(trimId: string, trimWidthIn: number, trimHeightIn: number) {
+  return trimId === '8.5x11' || (trimWidthIn >= 8.5 && trimHeightIn >= 8.5);
+}
+
+export function getKdpPageRange(input: KdpCoverInput, trimWidthIn: number, trimHeightIn: number): KdpPageRange {
+  if (input.binding === 'hardcover') return { min: 75, max: 550, source: 'hardcover-disabled' };
+  if (input.trimId === 'custom') {
+    const source = isLarge85Trim(input.trimId, trimWidthIn, trimHeightIn) ? LARGE_85_PAPERBACK_PAGE_RANGES : COMMON_PAPERBACK_PAGE_RANGES;
+    const range = pageRangeFromTable(source, input.interior, input.paper);
+    return { ...range, source: 'custom-estimate' };
+  }
+  const source = isLarge85Trim(input.trimId, trimWidthIn, trimHeightIn) ? LARGE_85_PAPERBACK_PAGE_RANGES : COMMON_PAPERBACK_PAGE_RANGES;
+  return pageRangeFromTable(source, input.interior, input.paper);
+}
+
 export function calculateKdpCoverSize(input: KdpCoverInput): KdpCoverResult {
   const trim = trimPresetById(input.trimId);
   const trimWidthIn = input.trimId === 'custom' ? input.customWidthIn : trim.widthIn;
@@ -94,10 +153,12 @@ export function calculateKdpCoverSize(input: KdpCoverInput): KdpCoverResult {
   const fullCoverWidthIn = roundTo(trimWidthIn * 2 + spineWidthIn + safeBleed * 2, 3);
   const fullCoverHeightIn = roundTo(trimHeightIn + safeBleed * 2, 3);
   const warnings: string[] = [];
-  const pageRange = input.binding === 'hardcover' ? { min: 75, max: 550 } : { min: 24, max: 828 };
+  const pageRange = getKdpPageRange(input, trimWidthIn, trimHeightIn);
 
-  if (safePageCount < pageRange.min) warnings.push(`Page count is below the common ${input.binding} planning range.`);
-  if (safePageCount > pageRange.max) warnings.push(`Page count is above the common ${input.binding} planning range.`);
+  if (safePageCount < pageRange.min) warnings.push(`Page count is below the KDP ${input.binding} range for this trim, paper, and interior type.`);
+  if (safePageCount > pageRange.max) warnings.push(`Page count is above the KDP ${input.binding} range for this trim, paper, and interior type.`);
+  if (pageRange.source === 'custom-estimate') warnings.push('Custom trim page-count limits are estimated from the closest KDP paperback trim group; verify the final range in KDP.');
+  if (safePageCount < 79) warnings.push('KDP does not allow spine text on paperbacks with fewer than 79 pages.');
   if (trimWidthIn < 4 || trimHeightIn < 6) warnings.push('Custom trim is unusually small; check KDP trim-size support.');
   if (trimWidthIn > 8.5 || trimHeightIn > 11) warnings.push('Custom trim is large; verify the size in KDP before designing.');
   if (safeBleed < 0.125) warnings.push('KDP cover artwork usually needs 0.125 in bleed on outside edges.');

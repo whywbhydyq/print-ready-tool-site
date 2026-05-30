@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="container nav">
             <Link className="brand" href="/" aria-label="Print Ready Tools home"><span className="brand-mark">▱</span><span>Print Ready Tools</span><small>by PixelFit</small></Link>
             <nav className="top-links" aria-label="Primary navigation">
-              <Link className="active" href="/kdp-cover-calculator/">KDP Cover</Link>
+              <Link className="active" href="/">KDP Cover</Link>
               <Link href="/kdp-interior-bleed-calculator/">Interior</Link>
               <Link href="/dpi-calculator/">DPI</Link>
               <Link href="/bleed-safe-zone-calculator/">Bleed</Link>
