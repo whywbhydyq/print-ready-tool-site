@@ -2,7 +2,7 @@
 const nextConfig = {
   async redirects() {
     return [
-      { source: '/kdp-cover-calculator', destination: '/', permanent: true },
+      { source: '/kdp-cover-calculator/:path*', destination: '/', permanent: true },
       { source: '/image-size/print-size-calculator', destination: '/print-size-calculator', permanent: true },
       { source: '/image-size/dpi-calculator', destination: '/dpi-calculator', permanent: true }
     ];
