@@ -14,6 +14,22 @@ const defaultPreset = kdpPresetById('six-by-nine-paperback');
 const kdpHomeUrl = 'https://print.ymirtool.com/';
 const kdpCalculatorUrl = kdpHomeUrl;
 
+
+const faqItems = [
+  {
+    question: 'How do I calculate KDP spine width?',
+    answer: 'Choose trim size, page count, interior type, and paper type. The calculator estimates spine width from page count and the current KDP paperback spine multipliers for the selected paper option.'
+  },
+  {
+    question: 'Does KDP cover size include bleed?',
+    answer: 'The cover file size includes bleed on the outside edges. The calculator also shows the trim spread before bleed so you can compare both values.'
+  },
+  {
+    question: 'What pixel size should a KDP cover be?',
+    answer: 'The pixel canvas is the cover file size multiplied by the selected PPI, commonly 300 PPI for print planning.'
+  }
+] as const;
+
 const kdpJsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -28,11 +44,11 @@ const kdpJsonLd = {
     },
     {
       '@type': 'FAQPage',
-      mainEntity: [
-        { '@type': 'Question', name: 'How do I calculate KDP spine width?', acceptedAnswer: { '@type': 'Answer', text: 'Choose trim size, page count, interior type, and paper type. The calculator estimates spine width from page count and the current KDP paperback spine multipliers for the selected paper option.' } },
-        { '@type': 'Question', name: 'Does KDP cover size include bleed?', acceptedAnswer: { '@type': 'Answer', text: 'The cover file size includes bleed on the outside edges. The calculator also shows the trim spread before bleed so you can compare both values.' } },
-        { '@type': 'Question', name: 'What pixel size should a KDP cover be?', acceptedAnswer: { '@type': 'Answer', text: 'The pixel canvas is the cover file size multiplied by the selected PPI, commonly 300 PPI for print planning.' } }
-      ]
+      mainEntity: faqItems.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer }
+      }))
     },
     {
       '@type': 'BreadcrumbList',
@@ -287,7 +303,10 @@ export function KdpCoverHome() {
         </section>
         <section className="grid">
           <div className="card"><h2>Preset cover sizes</h2><p><Link href="/guides/kdp-6x9-120-page-cover-size/">6 × 9, 120 pages</Link></p><p><Link href="/guides/kdp-5-5x8-5-200-page-cover-size/">5.5 × 8.5, 200 pages</Link></p><p><Link href="/guides/kdp-8-5x11-120-page-workbook-cover-size/">8.5 × 11, 120-page workbook</Link></p></div>
-          <div className="card"><h2>FAQ</h2>{guides.filter(([, title]) => title.includes('KDP')).slice(0, 3).map(([href, title]) => <p key={href}><Link href={href}>{title}</Link></p>)}</div>
+          <div className="card kdp-faq-card">
+            <h2>FAQ</h2>
+            {faqItems.map((item) => <p key={item.question}><strong>{item.question}</strong><br />{item.answer}</p>)}
+          </div>
           <div className="card"><h2>Sources and limits</h2><p>This planning calculator estimates cover setup dimensions. Always verify the final file in KDP Previewer. This tool is independent and not affiliated with Amazon.</p><p><Link href="/disclaimer/">Learn more about formulas and limits</Link></p></div>
         </section>
       </section>

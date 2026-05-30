@@ -32,7 +32,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Open the KDP cover calculator"
     },
     "sections": [
@@ -166,7 +166,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Calculate cover size with bleed"
     },
     "sections": [
@@ -263,7 +263,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Calculate pixel canvas"
     },
     "sections": [
@@ -368,7 +368,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Show barcode safe zone"
     },
     "sections": [
@@ -433,7 +433,7 @@ export const printArticles: PrintArticle[] = [
     ],
     "related": [
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "KDP cover calculator"
       },
       {
@@ -463,7 +463,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP print options",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Calculate from trim size and pages"
     },
     "sections": [
@@ -541,7 +541,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP spine width guide"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "KDP cover calculator"
       }
     ],
@@ -563,7 +563,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Download an SVG or PNG guide"
     },
     "sections": [
@@ -635,7 +635,7 @@ export const printArticles: PrintArticle[] = [
     ],
     "related": [
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "KDP cover calculator"
       },
       {
@@ -665,7 +665,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Load the 6×9 paperback calculator"
     },
     "sections": [
@@ -754,7 +754,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP trim size and page count"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "KDP cover calculator"
       }
     ],
@@ -776,7 +776,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Calculate spine width"
     },
     "sections": [
@@ -866,7 +866,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP trim size and page count"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "KDP cover calculator"
       }
     ],
@@ -888,7 +888,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Check the cover dimensions first"
     },
     "sections": [
@@ -985,7 +985,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP barcode safe zone"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "KDP cover calculator"
       }
     ],
@@ -1007,7 +1007,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Calculate the spine first"
     },
     "sections": [
@@ -1090,7 +1090,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP cover size formula"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "Calculate spine width"
       }
     ],
@@ -1112,7 +1112,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Check the cover dimensions first"
     },
     "sections": [
@@ -1196,7 +1196,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP rejection checklist"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "Check cover dimensions first"
       }
     ],
@@ -1218,7 +1218,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Show safe zones"
     },
     "sections": [
@@ -1295,7 +1295,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP barcode safe zone"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "Show cover safe zones"
       }
     ],
@@ -1317,7 +1317,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Plan the barcode safe zone"
     },
     "sections": [
@@ -1389,7 +1389,7 @@ export const printArticles: PrintArticle[] = [
         "label": "Low-content cover setup"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "Plan the barcode area"
       }
     ],
@@ -1411,7 +1411,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Calculate the pixel canvas"
     },
     "sections": [
@@ -1510,7 +1510,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Check cover setup first"
     },
     "sections": [
@@ -1587,7 +1587,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP image quality and 300 DPI"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "Check cover setup first"
       }
     ],
@@ -1609,7 +1609,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Switch reading direction"
     },
     "sections": [
@@ -1671,7 +1671,7 @@ export const printArticles: PrintArticle[] = [
     ],
     "related": [
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "Switch reading direction in the calculator"
       },
       {
@@ -1701,7 +1701,7 @@ export const printArticles: PrintArticle[] = [
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {
-      "href": "/kdp-cover-calculator/",
+      "href": "/",
       "label": "Calculate low-content cover size"
     },
     "sections": [
@@ -1783,7 +1783,7 @@ export const printArticles: PrintArticle[] = [
         "label": "KDP trim size and page count"
       },
       {
-        "href": "/kdp-cover-calculator/",
+        "href": "/",
         "label": "Calculate low-content cover size"
       }
     ],

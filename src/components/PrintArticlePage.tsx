@@ -3,10 +3,6 @@ import type { PrintArticle } from '@/src/lib/printArticles';
 import { absoluteUrl } from '@/src/lib/site';
 
 
-function canonicalInternalHref(href: string) {
-  return href === '/kdp-cover-calculator/' ? '/' : href;
-}
-
 function articleJsonLd(article: PrintArticle) {
   return {
     '@context': 'https://schema.org',
