@@ -1801,6 +1801,211 @@ export const printArticles: PrintArticle[] = [
         "href": "https://kdp.amazon.com/en_US/help/topic/G5HDYGP4BXLX4RUW"
       }
     ]
+  },
+
+  {
+    "path": "/guides/kdp-6x9-120-page-cover-size/",
+    "title": "KDP 6×9 cover size for 120 pages",
+    "description": "Load a real 6×9 KDP paperback preset for 120 black-and-white pages on white paper, with spine width, bleed, pixel size, and calculator entry.",
+    "updated": "2026-05-30",
+    "category": "KDP cover preset",
+    "primaryCta": {
+      "href": "/?preset=six-by-nine-paperback",
+      "label": "Load this 6×9 preset in the calculator"
+    },
+    "sections": [
+      {
+        "heading": "Preset parameters",
+        "body": [
+          "This is a single-task preset page, not a general article. It uses a 6 × 9 in paperback, 120 pages, black-and-white interior, white paper, 0.125 in bleed, left-to-right reading direction, and 300 PPI pixel planning.",
+          "Use it when you need a quick planning canvas before checking the final file in the official KDP calculator and Previewer."
+        ],
+        "table": {
+          "caption": "Preset input values",
+          "headers": ["Field", "Value"],
+          "rows": [
+            ["Trim size", "6 × 9 in"],
+            ["Page count", "120 pages"],
+            ["Interior / paper", "Black & white · white paper"],
+            ["Bleed", "0.125 in"],
+            ["PPI", "300"],
+            ["Reading direction", "Left to right"]
+          ]
+        }
+      },
+      {
+        "heading": "Example output",
+        "body": [
+          "Using KDP's paperback spine multiplier for black-and-white white paper, the spine is 120 × 0.002252 = 0.270 in. The full cover file includes bleed; the trim spread does not."
+        ],
+        "table": {
+          "caption": "Calculated 6 × 9 / 120-page result",
+          "headers": ["Measurement", "Value"],
+          "rows": [
+            ["Spine width", "0.270 in"],
+            ["Trim spread before bleed", "12.270 × 9 in"],
+            ["Cover file including bleed", "12.520 × 9.25 in"],
+            ["Pixel canvas at 300 PPI", "3756 × 2775 px"]
+          ]
+        }
+      },
+      {
+        "heading": "Common mistakes for this setup",
+        "body": [
+          "Do not use a front-cover-only canvas for the full paperback cover. Do not remove bleed from the final cover file. Recalculate if the final manuscript page count changes after formatting. Keep the barcode planning zone clear unless you provide your own barcode."
+        ]
+      }
+    ],
+    "faq": [
+      { "question": "Is this value fixed for every 6×9 paperback?", "answer": "No. The spine changes when page count or paper type changes." },
+      { "question": "Can I put spine text on this 120-page paperback?", "answer": "This preset is above KDP's minimum page count for spine text, but the text still must fit inside the spine safe area." },
+      { "question": "Should I still use the official KDP calculator?", "answer": "Yes. Treat this as a planning preset and verify the final PDF in KDP." }
+    ],
+    "related": [
+      { "href": "/guides/kdp-paperback-cover-size-formula/", "label": "KDP cover size formula" },
+      { "href": "/guides/kdp-cover-size-with-bleed/", "label": "KDP cover size with bleed" },
+      { "href": "/guides/kdp-spine-width-calculator/", "label": "KDP spine width guide" }
+    ],
+    "sources": [
+      { "label": "Amazon KDP paperback cover requirements", "href": "https://kdp.amazon.com/en_US/help/topic/G201953020" },
+      { "label": "Amazon KDP print options and page-count limits", "href": "https://kdp.amazon.com/en_US/help/topic/G201834180" }
+    ]
+  },
+  {
+    "path": "/guides/kdp-5-5x8-5-200-page-cover-size/",
+    "title": "KDP 5.5×8.5 cover size for 200 pages",
+    "description": "Load a true 5.5×8.5 KDP paperback preset for a 200-page black-and-white cream-paper book, with spine width and full cover canvas.",
+    "updated": "2026-05-30",
+    "category": "KDP cover preset",
+    "primaryCta": {
+      "href": "/?preset=novel-cream",
+      "label": "Load this 5.5×8.5 preset in the calculator"
+    },
+    "sections": [
+      {
+        "heading": "Preset parameters",
+        "body": [
+          "This preset is for a 5.5 × 8.5 in paperback with 200 black-and-white pages on cream paper, 0.125 in bleed, left-to-right reading direction, and 300 PPI pixel planning.",
+          "It is useful for novels, memoirs, and similar text-heavy paperback interiors where cream paper changes the spine multiplier."
+        ],
+        "table": {
+          "caption": "Preset input values",
+          "headers": ["Field", "Value"],
+          "rows": [
+            ["Trim size", "5.5 × 8.5 in"],
+            ["Page count", "200 pages"],
+            ["Interior / paper", "Black & white · cream paper"],
+            ["Bleed", "0.125 in"],
+            ["PPI", "300"],
+            ["Reading direction", "Left to right"]
+          ]
+        }
+      },
+      {
+        "heading": "Example output",
+        "body": [
+          "For black-and-white cream paper, KDP's paperback spine multiplier is 0.0025 in per page. A 200-page book therefore has a 0.500 in spine."
+        ],
+        "table": {
+          "caption": "Calculated 5.5 × 8.5 / 200-page result",
+          "headers": ["Measurement", "Value"],
+          "rows": [
+            ["Spine width", "0.500 in"],
+            ["Trim spread before bleed", "11.500 × 8.5 in"],
+            ["Cover file including bleed", "11.750 × 8.75 in"],
+            ["Pixel canvas at 300 PPI", "3525 × 2625 px"]
+          ]
+        }
+      },
+      {
+        "heading": "Common mistakes for this setup",
+        "body": [
+          "Do not reuse a white-paper spine width for a cream-paper book. Do not design the spine before the final page count is locked. Keep spine text comfortably inside the spine because binding variance can shift the fold lines."
+        ]
+      }
+    ],
+    "faq": [
+      { "question": "Why is this spine wider than white paper?", "answer": "KDP's cream-paper paperback multiplier is larger than the white-paper multiplier." },
+      { "question": "Can this preset be used for 5×8?", "answer": "No. Use the calculator and select the exact trim size because cover width and height change." },
+      { "question": "Is 200 pages inside KDP's range?", "answer": "Yes. It is inside the listed 5.5×8.5 paperback range for black-and-white cream paper." }
+    ],
+    "related": [
+      { "href": "/guides/kdp-6x9-120-page-cover-size/", "label": "6×9 120-page preset" },
+      { "href": "/guides/kdp-spine-text-requirements/", "label": "KDP spine text requirements" },
+      { "href": "/guides/kdp-trim-size-page-count/", "label": "Trim size and page count guide" }
+    ],
+    "sources": [
+      { "label": "Amazon KDP paperback cover requirements", "href": "https://kdp.amazon.com/en_US/help/topic/G201953020" },
+      { "label": "Amazon KDP print options and page-count limits", "href": "https://kdp.amazon.com/en_US/help/topic/G201834180" }
+    ]
+  },
+  {
+    "path": "/guides/kdp-8-5x11-120-page-workbook-cover-size/",
+    "title": "KDP 8.5×11 workbook cover size for 120 pages",
+    "description": "Load an 8.5×11 KDP paperback workbook preset for 120 standard-color pages, with the large-trim page range and full cover canvas.",
+    "updated": "2026-05-30",
+    "category": "KDP cover preset",
+    "primaryCta": {
+      "href": "/?preset=workbook-color",
+      "label": "Load this 8.5×11 workbook preset in the calculator"
+    },
+    "sections": [
+      {
+        "heading": "Preset parameters",
+        "body": [
+          "This preset is for an 8.5 × 11 in paperback workbook with 120 standard-color pages, 0.125 in bleed, left-to-right reading direction, and 300 PPI pixel planning.",
+          "Because 8.5 × 11 is a large trim size, use the calculator's page-count warning rather than assuming the same maximum as a 6 × 9 paperback."
+        ],
+        "table": {
+          "caption": "Preset input values",
+          "headers": ["Field", "Value"],
+          "rows": [
+            ["Trim size", "8.5 × 11 in"],
+            ["Page count", "120 pages"],
+            ["Interior / paper", "Standard color · white paper"],
+            ["Bleed", "0.125 in"],
+            ["PPI", "300"],
+            ["Reading direction", "Left to right"]
+          ]
+        }
+      },
+      {
+        "heading": "Example output",
+        "body": [
+          "Standard color paperback interiors use the 0.002252 in per page spine multiplier. For 120 pages, the spine is 0.270 in."
+        ],
+        "table": {
+          "caption": "Calculated 8.5 × 11 / 120-page result",
+          "headers": ["Measurement", "Value"],
+          "rows": [
+            ["Spine width", "0.270 in"],
+            ["Trim spread before bleed", "17.270 × 11 in"],
+            ["Cover file including bleed", "17.520 × 11.25 in"],
+            ["Pixel canvas at 300 PPI", "5256 × 3375 px"]
+          ]
+        }
+      },
+      {
+        "heading": "Common mistakes for this setup",
+        "body": [
+          "Do not use a front-cover-only 8.5 × 11 canvas for the full cover spread. Keep back-cover worksheet previews, logos, and decorative frames out of the barcode planning zone. Check that the page count remains inside the standard-color paperback range."
+        ]
+      }
+    ],
+    "faq": [
+      { "question": "Is 8.5×11 treated like a common 6×9 trim?", "answer": "No. KDP lists different maximum page counts for some large trim sizes, including 8.5×11." },
+      { "question": "Does standard color change the minimum page count?", "answer": "Yes. KDP lists a higher minimum for standard-color paperback interiors than for black-and-white interiors." },
+      { "question": "Can this preset be used for a low-content book?", "answer": "It can be used for planning a workbook-style paperback cover, but final ISBN, barcode, and upload checks still belong in KDP." }
+    ],
+    "related": [
+      { "href": "/guides/kdp-low-content-book-cover-setup/", "label": "Low-content book cover setup" },
+      { "href": "/guides/kdp-trim-size-page-count/", "label": "Trim size and page count guide" },
+      { "href": "/guides/kdp-cover-size-with-bleed/", "label": "Cover size with bleed" }
+    ],
+    "sources": [
+      { "label": "Amazon KDP paperback cover requirements", "href": "https://kdp.amazon.com/en_US/help/topic/G201953020" },
+      { "label": "Amazon KDP print options and page-count limits", "href": "https://kdp.amazon.com/en_US/help/topic/G201834180" }
+    ]
   }
 ];
 

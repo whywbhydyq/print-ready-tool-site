@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { coreTools, guides, templates } from '@/src/lib/content';
 import { calculateKdpCoverSize, formatInches, type KdpCoverInput } from '@/src/lib/kdp/cover';
 import { interiorLabel, kdpPresetById, kdpPresets, paperLabel, trimPresetById, trimPresets, type InteriorType, type PaperType, type ReadingDirection } from '@/src/lib/kdp/presets';
 import { KdpCoverPreview } from '@/src/components/kdp/KdpCoverPreview';
 import { KdpMetricStrip } from '@/src/components/kdp/KdpMetricStrip';
 import { KdpResultActions } from '@/src/components/kdp/KdpResultActions';
+import { getKdpSpreadOrder } from '@/src/lib/kdp/layout';
 
 const defaultPreset = kdpPresetById('six-by-nine-paperback');
 const kdpHomeUrl = 'https://print.ymirtool.com/';
@@ -78,7 +79,8 @@ export function KdpCoverHome() {
   const draftResult = useMemo(() => calculateKdpCoverSize(draftInput), [draftInput]);
   const result = useMemo(() => calculateKdpCoverSize(confirmedInput), [confirmedInput]);
   const trim = trimPresetById(confirmedInput.trimId);
-  const summary = `Create your cover file at ${formatInches(result.fullCoverWidthIn, 3)} × ${formatInches(result.fullCoverHeightIn, 2)} in including bleed.\nTrim spread: ${formatInches(result.trimSpreadWidthIn, 3)} × ${formatInches(result.trimHeightIn, 2)} in before bleed.\nAt ${result.ppi} PPI, use ${result.pixelWidth} × ${result.pixelHeight} px.\nBack cover: ${formatInches(result.trimWidthIn, 2)} × ${formatInches(result.trimHeightIn, 2)} in. Front cover: ${formatInches(result.trimWidthIn, 2)} × ${formatInches(result.trimHeightIn, 2)} in.\nSpine: ${formatInches(result.spineWidthIn, 3)} in.\nBleed: ${formatInches(result.bleedIn, 3)} in on all outside edges.\nReading direction: ${confirmedInput.readingDirection === 'right-to-left' ? 'right to left' : 'left to right'}.\nKeep important text inside the safe zone.\nLeave the barcode safe zone empty unless you supply your own barcode.`;
+  const spreadOrder = getKdpSpreadOrder(confirmedInput.readingDirection);
+  const summary = `Create your cover file at ${formatInches(result.fullCoverWidthIn, 3)} × ${formatInches(result.fullCoverHeightIn, 2)} in including bleed.\nTrim spread: ${formatInches(result.trimSpreadWidthIn, 3)} × ${formatInches(result.trimHeightIn, 2)} in before bleed.\nAt ${result.ppi} PPI, use ${result.pixelWidth} × ${result.pixelHeight} px.\nBack cover: ${formatInches(result.trimWidthIn, 2)} × ${formatInches(result.trimHeightIn, 2)} in. Front cover: ${formatInches(result.trimWidthIn, 2)} × ${formatInches(result.trimHeightIn, 2)} in.\nSpine: ${formatInches(result.spineWidthIn, 3)} in.\nBleed: ${formatInches(result.bleedIn, 3)} in on all outside edges.\nReading direction: ${confirmedInput.readingDirection === 'right-to-left' ? 'right to left' : 'left to right'}.\nLayout: ${spreadOrder.orderText}.\nBarcode planning zone: ${confirmedInput.showBarcode ? spreadOrder.barcodeCorner : 'hidden in this guide'}.\nKeep important text inside the safe zone.\nLeave the barcode safe zone empty unless you supply your own barcode.`;
 
   const update = (patch: Partial<KdpCoverInput>) => {
     setCalculated(false);
@@ -98,6 +100,16 @@ export function KdpCoverHome() {
     setConfirmedInput(draftInput);
     setCalculated(true);
   };
+  useEffect(() => {
+    const presetId = new URLSearchParams(window.location.search).get('preset');
+    if (!presetId || !kdpPresets.some((preset) => preset.id === presetId)) return;
+    const nextInput = presetToInput(presetId);
+    setActivePreset(presetId);
+    setCalculated(true);
+    setDraftInput(nextInput);
+    setConfirmedInput(nextInput);
+  }, []);
+
 
   const copySummary = async () => {
     try {
@@ -175,7 +187,7 @@ export function KdpCoverHome() {
               <label className="kdp-field">Page count
                 <input type="number" {...inputNumber(draftInput.pageCount, (value) => update({ pageCount: value }), { min: 1, step: 1 })} />
               </label>
-              <div className="kdp-range-note">Min {draftResult.pageRange.min} - Max {draftResult.pageRange.max} pages</div>
+              <div className="kdp-range-note">Min {draftResult.pageRange.min} - Max {draftResult.pageRange.max} pages · {draftResult.pageRange.label}</div>
               <label className="kdp-field">Bleed
                 <div className="kdp-inline-field">
                   <input type="number" {...inputNumber(draftInput.bleedIn, (value) => update({ bleedIn: value }), { min: 0, step: 0.001 })} />
@@ -222,11 +234,12 @@ export function KdpCoverHome() {
                   <li>Trim spread: {formatInches(result.trimSpreadWidthIn, 3)} × {formatInches(result.trimHeightIn, 2)} in.</li>
                   <li>At {result.ppi} PPI, use {result.pixelWidth} × {result.pixelHeight} px.</li>
                   <li>Back and front cover: {formatInches(result.trimWidthIn, 2)} × {formatInches(result.trimHeightIn, 2)} in each.</li>
+                  <li>Layout order: {spreadOrder.orderText}. Barcode zone: {confirmedInput.showBarcode ? spreadOrder.barcodeCorner : 'hidden'}.</li>
                   <li>Spine {formatInches(result.spineWidthIn, 3)} in · Bleed {formatInches(result.bleedIn, 3)} in · Final check in KDP Previewer.</li>
                   <li>Spine uses KDP paperback multipliers: B&W white/standard color 0.002252, B&W cream 0.0025, premium color 0.002347.</li>
                 </ul>
               </div>
-              <KdpResultActions result={result} summary={summary} disabled={!calculated} />
+              <KdpResultActions result={result} summary={summary} readingDirection={confirmedInput.readingDirection} showBarcode={confirmedInput.showBarcode} disabled={!calculated} />
             </div>
           </div>
         </section>
@@ -273,6 +286,7 @@ export function KdpCoverHome() {
           <span>Final PDF checked in KDP Previewer.</span>
         </section>
         <section className="grid">
+          <div className="card"><h2>Preset cover sizes</h2><p><Link href="/guides/kdp-6x9-120-page-cover-size/">6 × 9, 120 pages</Link></p><p><Link href="/guides/kdp-5-5x8-5-200-page-cover-size/">5.5 × 8.5, 200 pages</Link></p><p><Link href="/guides/kdp-8-5x11-120-page-workbook-cover-size/">8.5 × 11, 120-page workbook</Link></p></div>
           <div className="card"><h2>FAQ</h2>{guides.filter(([, title]) => title.includes('KDP')).slice(0, 3).map(([href, title]) => <p key={href}><Link href={href}>{title}</Link></p>)}</div>
           <div className="card"><h2>Sources and limits</h2><p>This planning calculator estimates cover setup dimensions. Always verify the final file in KDP Previewer. This tool is independent and not affiliated with Amazon.</p><p><Link href="/disclaimer/">Learn more about formulas and limits</Link></p></div>
         </section>

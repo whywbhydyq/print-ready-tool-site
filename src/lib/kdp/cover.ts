@@ -17,7 +17,8 @@ export type KdpCoverInput = {
 export type KdpPageRange = {
   min: number;
   max: number;
-  source: 'kdp-common-trim' | 'kdp-large-trim' | 'custom-estimate' | 'hardcover-disabled';
+  source: 'kdp-trim-table' | 'custom-estimate' | 'hardcover-disabled';
+  label: string;
 };
 
 export type KdpCoverResult = {
@@ -47,58 +48,68 @@ const CM_PER_INCH = 2.54;
 // KDP paperback spine multipliers from Amazon KDP's paperback cover
 // requirements. Values are inches per page. The calculator remains an
 // independent planning aid; final files should still be verified in KDP Previewer.
-const SPINE_MULTIPLIERS: Record<InteriorType, Record<PaperType, number>> = {
-  'black-white': {
-    white: 0.002252,
-    cream: 0.0025,
-    color: 0.002252
-  },
-  'standard-color': {
-    white: 0.002252,
-    cream: 0.002252,
-    color: 0.002252
-  },
-  'premium-color': {
-    white: 0.002347,
-    cream: 0.002347,
-    color: 0.002347
-  }
+const SPINE_MULTIPLIERS: Record<InteriorType, number> = {
+  'black-white': 0.002252,
+  'standard-color': 0.002252,
+  'premium-color': 0.002347
+};
+const BLACK_WHITE_CREAM_MULTIPLIER = 0.0025;
+
+type PageRangeKey = 'blackWhiteWhite' | 'blackWhiteCream' | 'standardColorWhite' | 'premiumColorWhite';
+type PaperbackTrimRange = Record<PageRangeKey, KdpPageRange>;
+
+function range(min: number, max: number, label: string): KdpPageRange {
+  return { min, max, source: 'kdp-trim-table', label };
+}
+
+const COMMON_PAPERBACK_RANGE: PaperbackTrimRange = {
+  blackWhiteWhite: range(24, 828, 'KDP paperback common trim · B&W white'),
+  blackWhiteCream: range(24, 776, 'KDP paperback common trim · B&W cream'),
+  standardColorWhite: range(72, 600, 'KDP paperback common trim · standard color'),
+  premiumColorWhite: range(24, 828, 'KDP paperback common trim · premium color')
 };
 
-const COMMON_PAPERBACK_PAGE_RANGES: Record<InteriorType, Record<PaperType, KdpPageRange>> = {
-  'black-white': {
-    white: { min: 24, max: 828, source: 'kdp-common-trim' },
-    cream: { min: 24, max: 776, source: 'kdp-common-trim' },
-    color: { min: 24, max: 828, source: 'kdp-common-trim' }
-  },
-  'standard-color': {
-    white: { min: 72, max: 600, source: 'kdp-common-trim' },
-    cream: { min: 72, max: 600, source: 'kdp-common-trim' },
-    color: { min: 72, max: 600, source: 'kdp-common-trim' }
-  },
-  'premium-color': {
-    white: { min: 24, max: 828, source: 'kdp-common-trim' },
-    cream: { min: 24, max: 828, source: 'kdp-common-trim' },
-    color: { min: 24, max: 828, source: 'kdp-common-trim' }
-  }
+const LARGE_825_PAPERBACK_RANGE: PaperbackTrimRange = {
+  blackWhiteWhite: range(24, 800, 'KDP paperback 8.25 in trim · B&W white'),
+  blackWhiteCream: range(24, 750, 'KDP paperback 8.25 in trim · B&W cream'),
+  standardColorWhite: range(72, 600, 'KDP paperback 8.25 in trim · standard color'),
+  premiumColorWhite: range(24, 800, 'KDP paperback 8.25 in trim · premium color')
 };
 
-const LARGE_85_PAPERBACK_PAGE_RANGES: Record<InteriorType, Record<PaperType, KdpPageRange>> = {
-  'black-white': {
-    white: { min: 24, max: 590, source: 'kdp-large-trim' },
-    cream: { min: 24, max: 550, source: 'kdp-large-trim' },
-    color: { min: 24, max: 590, source: 'kdp-large-trim' }
-  },
-  'standard-color': {
-    white: { min: 72, max: 600, source: 'kdp-large-trim' },
-    cream: { min: 72, max: 600, source: 'kdp-large-trim' },
-    color: { min: 72, max: 600, source: 'kdp-large-trim' }
-  },
-  'premium-color': {
-    white: { min: 24, max: 590, source: 'kdp-large-trim' },
-    cream: { min: 24, max: 590, source: 'kdp-large-trim' },
-    color: { min: 24, max: 590, source: 'kdp-large-trim' }
-  }
+const LARGE_85_PAPERBACK_RANGE: PaperbackTrimRange = {
+  blackWhiteWhite: range(24, 590, 'KDP paperback 8.5 in trim · B&W white'),
+  blackWhiteCream: range(24, 550, 'KDP paperback 8.5 in trim · B&W cream'),
+  standardColorWhite: range(72, 600, 'KDP paperback 8.5 in trim · standard color'),
+  premiumColorWhite: range(24, 590, 'KDP paperback 8.5 in trim · premium color')
+};
+
+const A4_PAPERBACK_RANGE: PaperbackTrimRange = {
+  blackWhiteWhite: range(24, 780, 'KDP paperback A4 trim · B&W white'),
+  blackWhiteCream: range(24, 730, 'KDP paperback A4 trim · B&W cream'),
+  // KDP lists standard color as not available for this A4 row. The calculator uses
+  // the nearest standard-color paperback maximum only as a conservative warning range
+  // when a user enters a custom A4-like trim.
+  standardColorWhite: range(72, 600, 'KDP custom A4-like trim · standard color estimate'),
+  premiumColorWhite: range(24, 590, 'KDP paperback A4 trim · premium color')
+};
+
+const PAPERBACK_PAGE_RANGE_BY_TRIM: Record<string, PaperbackTrimRange> = {
+  '5x8': COMMON_PAPERBACK_RANGE,
+  '5.06x7.81': COMMON_PAPERBACK_RANGE,
+  '5.25x8': COMMON_PAPERBACK_RANGE,
+  '5.5x8.5': COMMON_PAPERBACK_RANGE,
+  '6x9': COMMON_PAPERBACK_RANGE,
+  '6.14x9.21': COMMON_PAPERBACK_RANGE,
+  '6.69x9.61': COMMON_PAPERBACK_RANGE,
+  '7x10': COMMON_PAPERBACK_RANGE,
+  '7.44x9.69': COMMON_PAPERBACK_RANGE,
+  '7.5x9.25': COMMON_PAPERBACK_RANGE,
+  '8x10': COMMON_PAPERBACK_RANGE,
+  '8.25x6': LARGE_825_PAPERBACK_RANGE,
+  '8.25x8.25': LARGE_825_PAPERBACK_RANGE,
+  '8.5x8.5': LARGE_85_PAPERBACK_RANGE,
+  '8.5x11': LARGE_85_PAPERBACK_RANGE,
+  '8.27x11.69': A4_PAPERBACK_RANGE
 };
 
 export function roundTo(value: number, decimals = 3): number {
@@ -118,28 +129,36 @@ export function inchesToCm(value: number): number {
 }
 
 export function getPaperMultiplier(interior: InteriorType, paper: PaperType): number {
-  const byPaper = SPINE_MULTIPLIERS[interior] || SPINE_MULTIPLIERS['black-white'];
-  return byPaper[paper] || byPaper.white;
+  if (interior === 'black-white' && paper === 'cream') return BLACK_WHITE_CREAM_MULTIPLIER;
+  return SPINE_MULTIPLIERS[interior] || SPINE_MULTIPLIERS['black-white'];
 }
 
-function pageRangeFromTable(table: Record<InteriorType, Record<PaperType, KdpPageRange>>, interior: InteriorType, paper: PaperType): KdpPageRange {
-  const byPaper = table[interior] || table['black-white'];
-  return byPaper[paper] || byPaper.white;
+function pageRangeKey(interior: InteriorType, paper: PaperType): PageRangeKey {
+  if (interior === 'standard-color') return 'standardColorWhite';
+  if (interior === 'premium-color') return 'premiumColorWhite';
+  return paper === 'cream' ? 'blackWhiteCream' : 'blackWhiteWhite';
 }
 
-function isLarge85Trim(trimId: string, trimWidthIn: number, trimHeightIn: number) {
-  return trimId === '8.5x11' || (trimWidthIn >= 8.5 && trimHeightIn >= 8.5);
+function rangeFromTrimTable(trimId: string, interior: InteriorType, paper: PaperType): KdpPageRange | undefined {
+  const table = PAPERBACK_PAGE_RANGE_BY_TRIM[trimId];
+  return table?.[pageRangeKey(interior, paper)];
+}
+
+function customRangeSource(trimWidthIn: number, trimHeightIn: number): PaperbackTrimRange {
+  if (trimWidthIn >= 8.45 && trimHeightIn >= 8.45) return LARGE_85_PAPERBACK_RANGE;
+  if (trimWidthIn >= 8.2 && trimHeightIn <= 8.6) return LARGE_825_PAPERBACK_RANGE;
+  if (trimHeightIn >= 11.5) return A4_PAPERBACK_RANGE;
+  return COMMON_PAPERBACK_RANGE;
 }
 
 export function getKdpPageRange(input: KdpCoverInput, trimWidthIn: number, trimHeightIn: number): KdpPageRange {
-  if (input.binding === 'hardcover') return { min: 75, max: 550, source: 'hardcover-disabled' };
+  if (input.binding === 'hardcover') return { min: 75, max: 550, source: 'hardcover-disabled', label: 'KDP hardcover range shown for reference only' };
+  const key = pageRangeKey(input.interior, input.paper);
   if (input.trimId === 'custom') {
-    const source = isLarge85Trim(input.trimId, trimWidthIn, trimHeightIn) ? LARGE_85_PAPERBACK_PAGE_RANGES : COMMON_PAPERBACK_PAGE_RANGES;
-    const range = pageRangeFromTable(source, input.interior, input.paper);
-    return { ...range, source: 'custom-estimate' };
+    const estimate = customRangeSource(trimWidthIn, trimHeightIn)[key];
+    return { ...estimate, source: 'custom-estimate', label: `${estimate.label} · custom trim estimate` };
   }
-  const source = isLarge85Trim(input.trimId, trimWidthIn, trimHeightIn) ? LARGE_85_PAPERBACK_PAGE_RANGES : COMMON_PAPERBACK_PAGE_RANGES;
-  return pageRangeFromTable(source, input.interior, input.paper);
+  return rangeFromTrimTable(input.trimId, input.interior, input.paper) || COMMON_PAPERBACK_RANGE[key];
 }
 
 export function calculateKdpCoverSize(input: KdpCoverInput): KdpCoverResult {
@@ -155,12 +174,12 @@ export function calculateKdpCoverSize(input: KdpCoverInput): KdpCoverResult {
   const warnings: string[] = [];
   const pageRange = getKdpPageRange(input, trimWidthIn, trimHeightIn);
 
-  if (safePageCount < pageRange.min) warnings.push(`Page count is below the KDP ${input.binding} range for this trim, paper, and interior type.`);
-  if (safePageCount > pageRange.max) warnings.push(`Page count is above the KDP ${input.binding} range for this trim, paper, and interior type.`);
+  if (safePageCount < pageRange.min) warnings.push(`Page count is below the ${pageRange.label} range.`);
+  if (safePageCount > pageRange.max) warnings.push(`Page count is above the ${pageRange.label} range.`);
   if (pageRange.source === 'custom-estimate') warnings.push('Custom trim page-count limits are estimated from the closest KDP paperback trim group; verify the final range in KDP.');
   if (safePageCount < 79) warnings.push('KDP does not allow spine text on paperbacks with fewer than 79 pages.');
-  if (trimWidthIn < 4 || trimHeightIn < 6) warnings.push('Custom trim is unusually small; check KDP trim-size support.');
-  if (trimWidthIn > 8.5 || trimHeightIn > 11) warnings.push('Custom trim is large; verify the size in KDP before designing.');
+  if (trimWidthIn < 4 || trimHeightIn < 6) warnings.push('Custom paperback trim must be at least 4 × 6 in on KDP.');
+  if (trimWidthIn > 8.5 || trimHeightIn > 11.69) warnings.push('Custom paperback trim must be no larger than 8.5 × 11.69 in on KDP.');
   if (safeBleed < 0.125) warnings.push('KDP cover artwork usually needs 0.125 in bleed on outside edges.');
   if (safePpi < 300) warnings.push('Pixel canvas is below 300 PPI; print detail may be limited.');
 

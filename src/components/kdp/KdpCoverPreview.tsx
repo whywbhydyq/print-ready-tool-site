@@ -1,4 +1,5 @@
 import { formatInches, type KdpCoverResult } from '@/src/lib/kdp/cover';
+import { getKdpSpreadOrder } from '@/src/lib/kdp/layout';
 import type { ReadingDirection } from '@/src/lib/kdp/presets';
 
 type Props = {
@@ -29,8 +30,9 @@ export function KdpCoverPreview({ result, showBarcode, readingDirection = 'left-
   const trimHeight = result.trimHeightIn * scaleY;
   const coverWidth = result.trimWidthIn * scaleX;
   const spineWidth = Math.max(result.spineWidthIn * scaleX, 22);
-  const leftLabel = readingDirection === 'right-to-left' ? 'Front cover' : 'Back cover';
-  const rightLabel = readingDirection === 'right-to-left' ? 'Back cover' : 'Front cover';
+  const spreadOrder = getKdpSpreadOrder(readingDirection);
+  const leftLabel = spreadOrder.leftPanel;
+  const rightLabel = spreadOrder.rightPanel;
   const leftX = trimX;
   const spineX = leftX + coverWidth;
   const rightX = spineX + spineWidth;
@@ -39,7 +41,9 @@ export function KdpCoverPreview({ result, showBarcode, readingDirection = 'left-
   const safeInsetY = Math.min(18, Math.max(9, 0.25 * scaleY));
   const barcodeWidth = Math.min(result.barcodeSafeZone.widthIn * scaleX, coverWidth * 0.34);
   const barcodeHeight = Math.min(result.barcodeSafeZone.heightIn * scaleY, trimHeight * 0.28);
-  const barcodeX = leftX + coverWidth - barcodeWidth - safeInsetX - 8;
+  const barcodeX = spreadOrder.backCoverSide === 'right'
+    ? rightX + safeInsetX + 8
+    : leftX + coverWidth - barcodeWidth - safeInsetX - 8;
   const barcodeY = trimY + trimHeight - barcodeHeight - safeInsetY - 4;
   const spreadBottom = originY + spreadHeight;
   const trimBottom = trimY + trimHeight;
@@ -47,7 +51,7 @@ export function KdpCoverPreview({ result, showBarcode, readingDirection = 'left-
 
   return (
     <div className="kdp-preview-frame" aria-label="KDP full cover spread preview">
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Back cover, spine, front cover, bleed, trim, safe zone and barcode safe zone">
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${spreadOrder.orderText}, bleed, trim, safe zone and barcode safe zone`}>
         <defs>
           <pattern id="paper-grain" width="22" height="22" patternUnits="userSpaceOnUse">
             <rect width="22" height="22" fill="#fffdf8" />

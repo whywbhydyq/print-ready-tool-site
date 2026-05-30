@@ -7,6 +7,9 @@ const lastModified = new Date('2026-05-30');
 const primaryRoutes = new Set([
   '/',
   '/guides/kdp-spine-width-calculator/',
+  '/guides/kdp-6x9-120-page-cover-size/',
+  '/guides/kdp-5-5x8-5-200-page-cover-size/',
+  '/guides/kdp-8-5x11-120-page-workbook-cover-size/',
   '/guides/kdp-paperback-cover-rejection-checklist/',
   '/templates/kdp-cover-setup-checklist/',
   '/guides/kdp-paperback-cover-size-formula/',

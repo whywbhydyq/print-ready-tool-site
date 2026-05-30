@@ -2,10 +2,14 @@
 
 import { useState } from 'react';
 import { formatInches, type KdpCoverResult } from '@/src/lib/kdp/cover';
+import { getKdpBarcodeBox, getKdpSpreadOrder } from '@/src/lib/kdp/layout';
+import type { ReadingDirection } from '@/src/lib/kdp/presets';
 
 type Props = {
   result: KdpCoverResult;
   summary: string;
+  readingDirection: ReadingDirection;
+  showBarcode: boolean;
   disabled?: boolean;
 };
 
@@ -27,7 +31,7 @@ function guideBaseName(result: KdpCoverResult): string {
   return `kdp-cover-${safeFilePart(result.trimWidthIn)}x${safeFilePart(result.trimHeightIn)}-${result.pageCount}p-${result.ppi}ppi-guide`;
 }
 
-function buildSvgGuide(result: KdpCoverResult) {
+function buildSvgGuide(result: KdpCoverResult, readingDirection: ReadingDirection, showBarcode: boolean) {
   const scale = 72;
   const width = result.fullCoverWidthIn * scale;
   const height = result.fullCoverHeightIn * scale;
@@ -35,44 +39,54 @@ function buildSvgGuide(result: KdpCoverResult) {
   const trimWidth = result.trimWidthIn * scale;
   const trimHeight = result.trimHeightIn * scale;
   const spineWidth = Math.max(result.spineWidthIn * scale, 10);
-  const backX = bleed;
+  const leftX = bleed;
   const trimY = bleed;
-  const spineX = backX + trimWidth;
-  const frontX = spineX + spineWidth;
+  const spineX = leftX + trimWidth;
+  const rightX = spineX + spineWidth;
   const safeInset = 0.25 * scale;
-  const barcodeW = result.barcodeSafeZone.widthIn * scale;
-  const barcodeH = result.barcodeSafeZone.heightIn * scale;
-  const barcodeX = backX + trimWidth - barcodeW - 0.35 * scale;
-  const barcodeY = trimY + trimHeight - barcodeH - 0.3 * scale;
+  const order = getKdpSpreadOrder(readingDirection);
+  const barcodeBox = getKdpBarcodeBox(result, readingDirection);
+  const barcodeX = barcodeBox.xIn * scale;
+  const barcodeY = barcodeBox.yIn * scale;
+  const barcodeW = barcodeBox.widthIn * scale;
+  const barcodeH = barcodeBox.heightIn * scale;
+  const barcodeMarkup = showBarcode ? `
+  <rect x="${barcodeX}" y="${barcodeY}" width="${barcodeW}" height="${barcodeH}" fill="#e5e7eb" stroke="#6b7280"/>
+  <text x="${barcodeX + barcodeW / 2}" y="${barcodeY + barcodeH / 2 - 5}" text-anchor="middle" font-family="Arial" font-size="12" font-weight="700">Barcode</text>
+  <text x="${barcodeX + barcodeW / 2}" y="${barcodeY + barcodeH / 2 + 10}" text-anchor="middle" font-family="Arial" font-size="12" font-weight="700">safe zone</text>` : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <rect width="100%" height="100%" fill="#fffdf8"/>
   <rect x="0" y="0" width="${width}" height="${height}" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 6"/>
-  <rect x="${backX}" y="${trimY}" width="${trimWidth + spineWidth + trimWidth}" height="${trimHeight}" fill="none" stroke="#111827" stroke-width="2"/>
-  <rect x="${backX + safeInset}" y="${trimY + safeInset}" width="${trimWidth - safeInset * 2}" height="${trimHeight - safeInset * 2}" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="8 6"/>
-  <rect x="${frontX + safeInset}" y="${trimY + safeInset}" width="${trimWidth - safeInset * 2}" height="${trimHeight - safeInset * 2}" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="8 6"/>
+  <rect x="${leftX}" y="${trimY}" width="${trimWidth + spineWidth + trimWidth}" height="${trimHeight}" fill="none" stroke="#111827" stroke-width="2"/>
+  <rect x="${leftX + safeInset}" y="${trimY + safeInset}" width="${trimWidth - safeInset * 2}" height="${trimHeight - safeInset * 2}" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="8 6"/>
+  <rect x="${rightX + safeInset}" y="${trimY + safeInset}" width="${trimWidth - safeInset * 2}" height="${trimHeight - safeInset * 2}" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="8 6"/>
   <line x1="${spineX}" y1="${trimY}" x2="${spineX}" y2="${trimY + trimHeight}" stroke="#111827" stroke-width="2"/>
-  <line x1="${frontX}" y1="${trimY}" x2="${frontX}" y2="${trimY + trimHeight}" stroke="#111827" stroke-width="2"/>
-  <rect x="${barcodeX}" y="${barcodeY}" width="${barcodeW}" height="${barcodeH}" fill="#e5e7eb" stroke="#6b7280"/>
-  <text x="${backX + trimWidth / 2}" y="${trimY + trimHeight / 2}" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Back cover</text>
+  <line x1="${rightX}" y1="${trimY}" x2="${rightX}" y2="${trimY + trimHeight}" stroke="#111827" stroke-width="2"/>${barcodeMarkup}
+  <text x="${leftX + trimWidth / 2}" y="${trimY + trimHeight / 2}" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">${order.leftPanel}</text>
   <text x="${spineX + spineWidth / 2}" y="${trimY + trimHeight / 2}" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700">Spine</text>
-  <text x="${frontX + trimWidth / 2}" y="${trimY + trimHeight / 2}" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Front cover</text>
+  <text x="${rightX + trimWidth / 2}" y="${trimY + trimHeight / 2}" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">${order.rightPanel}</text>
+  <text x="${leftX + trimWidth / 2}" y="${height - bleed / 2}" text-anchor="middle" font-family="Arial" font-size="12">${formatInches(result.trimWidthIn, 2)} × ${formatInches(result.trimHeightIn, 2)} in</text>
+  <text x="${rightX + trimWidth / 2}" y="${height - bleed / 2}" text-anchor="middle" font-family="Arial" font-size="12">${formatInches(result.trimWidthIn, 2)} × ${formatInches(result.trimHeightIn, 2)} in</text>
+  <text x="${spineX + spineWidth / 2}" y="${height - bleed / 2}" text-anchor="middle" font-family="Arial" font-size="12">${formatInches(result.spineWidthIn, 3)} in spine</text>
 </svg>`;
 }
 
-export function KdpResultActions({ result, summary, disabled = false }: Props) {
+export function KdpResultActions({ result, summary, readingDirection, showBarcode, disabled = false }: Props) {
   const [copied, setCopied] = useState<string | null>(null);
-  const svg = buildSvgGuide(result);
+  const svg = buildSvgGuide(result, readingDirection, showBarcode);
   const baseName = guideBaseName(result);
+  const order = getKdpSpreadOrder(readingDirection);
   const figmaSetup = `KDP cover setup
 Canvas incl. bleed: ${formatInches(result.fullCoverWidthIn, 3)} × ${formatInches(result.fullCoverHeightIn, 2)} in
 Trim spread: ${formatInches(result.trimSpreadWidthIn, 3)} × ${formatInches(result.trimHeightIn, 2)} in
+Layout: ${order.orderText}
 Pixels: ${result.pixelWidth} × ${result.pixelHeight}px @ ${result.ppi} PPI
 Back cover: ${formatInches(result.trimWidthIn, 2)} × ${formatInches(result.trimHeightIn, 2)} in
 Front cover: ${formatInches(result.trimWidthIn, 2)} × ${formatInches(result.trimHeightIn, 2)} in
 Spine: ${formatInches(result.spineWidthIn, 3)} in
 Bleed: ${formatInches(result.bleedIn, 3)} in on outside edges
-Barcode safe zone: ${formatInches(result.barcodeSafeZone.widthIn, 3)} × ${formatInches(result.barcodeSafeZone.heightIn, 3)} in`;
+Barcode safe zone: ${showBarcode ? `${formatInches(result.barcodeSafeZone.widthIn, 3)} × ${formatInches(result.barcodeSafeZone.heightIn, 3)} in, ${order.barcodeCorner}` : 'hidden in guide'}`;
 
   const copy = async (key: string, text: string) => {
     try {
