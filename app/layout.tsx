@@ -10,7 +10,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: 'KDP Cover Size & Spine Calculator - Print Ready Tool', template: '%s | Print Ready Tools' },
   description,
-  other: { 'google-adsense-account': 'ca-pub-1653188471819736' },
+  other: {
+    'baidu-site-verification': 'codeva-RtAtAyOcTn',
+    'google-adsense-account': 'ca-pub-1653188471819736'
+  },
   openGraph: { title: 'KDP Cover Size & Spine Calculator', description, url: siteUrl, siteName: 'Print Ready Tools', type: 'website' },
   twitter: { card: 'summary', title: 'KDP Cover Size & Spine Calculator', description }
 };
