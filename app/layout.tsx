@@ -1,7 +1,7 @@
 import './globals.css';
 import Link from 'next/link';
-import Script from 'next/script';
 import type { Metadata } from 'next';
+import { AdSenseAutoAds } from '@/src/components/AdSenseAutoAds';
 import { siteUrl } from '@/src/lib/site';
 
 const description = 'Calculate KDP cover size, spine width, bleed, barcode safe zone, image pixels, DPI, and print readiness before uploading or printing.';
@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="muted">© 2026 Print Ready Tools</span>
           </div>
         </footer>
-        <Script id="adsense-auto-ads" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1653188471819736" crossOrigin="anonymous" strategy="afterInteractive" />
+        <AdSenseAutoAds />
       </body>
     </html>
   );
