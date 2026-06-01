@@ -8,11 +8,11 @@ import { PixelFitPage } from '@/src/components/PixelFitClient';
 import { articleByPath } from '@/src/lib/printArticles';
 import { PrintArticlePage } from '@/src/components/PrintArticlePage';
 const extra: Record<string, string> = {
-  '/about/': 'Print Ready Tools provides free browser-based calculators for print sizes, DPI, bleed, safe zones, KDP covers, Etsy printable files, and PixelFit image size tools. We are independent and not affiliated with Amazon, Etsy, Canva, Adobe, YouTube, TikTok, LinkedIn or X.',
-  '/contact/': 'For corrections, source updates or feature requests, contact aren.ymir@gmail.com. Do not send files containing private customer data.',
-  '/privacy/': 'Images are checked locally in your browser and are not uploaded or stored. Analytics should only use anonymous aggregate events and never record file names or exact image content.',
-  '/terms/': 'These tools are provided as-is for general print setup, image size, DPI and safe-zone guidance. Verify final requirements with your printer, marketplace or platform.',
-  '/disclaimer/': 'This site does not guarantee KDP, Etsy, platform upload, social media display or print approval. Official templates and platform specifications override calculator estimates.',
+  '/about/': 'Print Ready Tools is a YmirTool site that provides free browser-based calculators for print sizes, DPI, bleed, safe zones, KDP covers, Etsy printable files, and PixelFit image size tools. We are independent and not affiliated with Amazon, Etsy, Canva, Adobe, YouTube, TikTok, LinkedIn or X.',
+  '/contact/': 'For corrections, source updates or feature requests, contact ymirtool@ymirtool.com. Do not send files containing private customer data.',
+  '/privacy/': 'YmirTool designs these tools so images are checked locally in your browser and are not uploaded or stored. Analytics should only use anonymous aggregate events and never record file names or exact image content.',
+  '/terms/': 'These YmirTool tools are provided as-is for general print setup, image size, DPI and safe-zone guidance. Verify final requirements with your printer, marketplace or platform.',
+  '/disclaimer/': 'YmirTool does not guarantee KDP, Etsy, platform upload, social media display or print approval. Official templates and platform specifications override calculator estimates.',
   '/glossary/': 'DPI/PPI: pixels per inch for print sizing. Bleed: extra artwork beyond trim. Safe zone: area for important content. Trim: final cut size. Aspect ratio: width-to-height proportion.',
   '/templates/etsy-buyer-instruction-template/': 'Thank you for purchasing this printable. Choose the ratio file matching your frame, print at 100% scale, and use high-quality paper or a professional print shop. Files are for personal use only unless your listing says otherwise.',
   '/templates/kdp-cover-setup-checklist/': 'KDP cover checklist: calculate trim, spine and bleed; create one PDF with back cover, spine and front cover; keep text in the safe zone; leave barcode space; verify with the official KDP previewer.',
