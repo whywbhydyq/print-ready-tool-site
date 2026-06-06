@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "buildCommand": "node_modules/.bin/next build",
-  "installCommand": "npm ci --omit=dev --no-audit --no-fund --ignore-scripts",
+  "installCommand": "corepack enable && pnpm install --prod --no-frozen-lockfile --ignore-scripts",
   "ignoreCommand": "node scripts/skip-old-vercel-builds.mjs"
 }
