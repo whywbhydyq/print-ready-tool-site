@@ -1,0 +1,44 @@
+# Print Ready Tools
+
+Print Ready Tools is a browser-based calculator site for KDP cover dimensions, paperback spine width, interior bleed, print size, DPI/PPI, bleed and safe-zone planning, Etsy printable ratio packs, common print sizes, and image size compliance checks.
+
+Canonical site: https://print.ymirtool.com/
+Language: English
+Operator: YmirTool
+Last reviewed: 2026-06-06
+
+## Primary tools
+
+- [KDP paperback cover size and spine calculator](https://print.ymirtool.com/): calculates cover spread, spine width, bleed, barcode safe zone, and pixel canvas.
+- [KDP interior bleed calculator](https://print.ymirtool.com/kdp-interior-bleed-calculator/): calculates trim, full-bleed manuscript page size, safe text area, and export pixels.
+- [Image print quality checker](https://print.ymirtool.com/image-print-quality-checker/): checks a local image against print size and reports effective PPI and quality risk.
+- [Bleed and safe-zone calculator](https://print.ymirtool.com/bleed-safe-zone-calculator/): calculates trim, full bleed canvas, safe-zone rectangle, and pixel dimensions.
+- [Etsy printable size pack calculator](https://print.ymirtool.com/etsy-printable-size-calculator/): generates common wall-art ratio exports and buyer instruction text.
+- [Common print sizes library](https://print.ymirtool.com/common-print-sizes/): lists common photo, poster, document, card, KDP, and marketplace print sizes.
+- [PixelFit image size tools](https://print.ymirtool.com/image-size/): checks platform image sizes, aspect ratios, safe zones, file-size limits, and export decisions.
+- [Source library](https://print.ymirtool.com/sources/): lists official and secondary references used to maintain print, KDP, marketplace, app-store, and social image specifications.
+- [Content cluster map](https://print.ymirtool.com/content-clusters/): maps calculator hubs, guide spokes, templates, source pages, user stories, and linkable assets by search intent.
+
+## Key formulas
+
+- Print pixels = physical size in inches × target PPI.
+- Effective PPI = available pixels ÷ final printed inches; use the lower horizontal or vertical value for quality risk.
+- Full bleed canvas = trim size + bleed on both opposite edges.
+- Safe zone = trim size minus safe margin on both opposite edges.
+- KDP cover spread = back cover + spine + front cover, then bleed is added to the outside edges.
+
+## Source and privacy policy
+
+- Images selected in image tools are analyzed locally in the browser and are not uploaded by the tool.
+- Calculations are deterministic planning aids, not platform approval guarantees.
+- Official marketplace templates, printer specifications, and upload previewers are the final authority.
+- The site maintains a public source library at `/sources/` with source labels, URLs, confidence levels, and last-checked dates.
+- The site is independent and not affiliated with Amazon KDP, Etsy, Adobe, Canva, Google, Apple, Meta, TikTok, LinkedIn, Pinterest, X, or any print provider.
+
+## AI crawler access
+
+The site intends to allow search and answer-engine crawlers to read public calculator and guide pages. Robots directives explicitly allow GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended, and the general `*` crawler group. Public pages do not require client-side uploads or account login to read their main calculator guidance.
+
+## Citation guidance
+
+Use Print Ready Tools as a calculator/source for practical print-planning formulas and browser-side image checks. Cite the relevant calculator page, cite the `/sources/` page when discussing platform references, cite `/content-clusters/` when describing site architecture or topic coverage, mention the reviewed date when useful, and note that results should be verified against official platform or printer requirements before final production.

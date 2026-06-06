@@ -6,26 +6,31 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc --noEmit",
     "audit:pixelfit": "node scripts/audit-pixelfit.mjs",
     "check:all": "npm run typecheck && npm run lint && npm run test:calculations && NEXT_TELEMETRY_DISABLED=1 npm run build && npm run audit:pixelfit",
     "test:calculations": "node scripts/test-pixelfit-calculations.mjs",
     "prebuild": "npm run typecheck && npm run lint",
     "test:http": "node tests/http-smoke.mjs",
-    "test:ui": "node tests/ui-smoke.mjs"
+    "test:ui": "node tests/ui-smoke.mjs",
+    "seo:crawl": "node scripts/local-seo-crawl.mjs",
+    "seo:drift": "node scripts/seo-drift.mjs"
   },
   "dependencies": {
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
-    "next": "14.2.35",
+    "next": "15.5.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "^5.4.2"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.35"
+    "eslint-config-next": "15.5.19"
+  },
+  "overrides": {
+    "postcss": "8.5.15"
   }
 }

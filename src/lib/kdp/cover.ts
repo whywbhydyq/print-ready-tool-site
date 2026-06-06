@@ -44,6 +44,16 @@ export type KdpCoverResult = {
 };
 
 const CM_PER_INCH = 2.54;
+export const KDP_MIN_TRIM_WIDTH_IN = 4;
+export const KDP_MIN_TRIM_HEIGHT_IN = 6;
+export const KDP_MAX_TRIM_WIDTH_IN = 8.5;
+export const KDP_MAX_TRIM_HEIGHT_IN = 11.69;
+export const KDP_MIN_PPI = 72;
+export const KDP_MAX_PPI = 1200;
+export const KDP_MIN_BLEED_IN = 0;
+export const KDP_MAX_BLEED_IN = 0.5;
+export const KDP_MAX_PAGE_COUNT_INPUT = 828;
+
 
 // KDP paperback spine multipliers from Amazon KDP's paperback cover
 // requirements. Values are inches per page. The calculator remains an
@@ -161,25 +171,44 @@ export function getKdpPageRange(input: KdpCoverInput, trimWidthIn: number, trimH
   return rangeFromTrimTable(input.trimId, input.interior, input.paper) || COMMON_PAPERBACK_RANGE[key];
 }
 
+function finiteOrDefault(value: number, fallback: number): number {
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
 export function calculateKdpCoverSize(input: KdpCoverInput): KdpCoverResult {
   const trim = trimPresetById(input.trimId);
-  const trimWidthIn = input.trimId === 'custom' ? input.customWidthIn : trim.widthIn;
-  const trimHeightIn = input.trimId === 'custom' ? input.customHeightIn : trim.heightIn;
-  const safePageCount = Math.max(1, Math.round(input.pageCount || 1));
-  const safeBleed = Math.max(0, input.bleedIn || 0);
-  const safePpi = Math.max(72, Math.round(input.ppi || 300));
+  const rawTrimWidthIn = input.trimId === 'custom' ? finiteOrDefault(input.customWidthIn, trim.widthIn) : trim.widthIn;
+  const rawTrimHeightIn = input.trimId === 'custom' ? finiteOrDefault(input.customHeightIn, trim.heightIn) : trim.heightIn;
+  const trimWidthIn = input.trimId === 'custom' ? clamp(rawTrimWidthIn, KDP_MIN_TRIM_WIDTH_IN, KDP_MAX_TRIM_WIDTH_IN) : trim.widthIn;
+  const trimHeightIn = input.trimId === 'custom' ? clamp(rawTrimHeightIn, KDP_MIN_TRIM_HEIGHT_IN, KDP_MAX_TRIM_HEIGHT_IN) : trim.heightIn;
+  const rawPageCount = Math.round(finiteOrDefault(input.pageCount, 1));
+  const safePageCount = clamp(rawPageCount || 1, 1, KDP_MAX_PAGE_COUNT_INPUT);
+  const rawBleed = finiteOrDefault(input.bleedIn, 0.125);
+  const safeBleed = clamp(rawBleed, KDP_MIN_BLEED_IN, KDP_MAX_BLEED_IN);
+  const rawPpi = Math.round(finiteOrDefault(input.ppi, 300));
+  const safePpi = clamp(rawPpi || 300, KDP_MIN_PPI, KDP_MAX_PPI);
   const spineWidthIn = roundTo(safePageCount * getPaperMultiplier(input.interior, input.paper), 3);
   const fullCoverWidthIn = roundTo(trimWidthIn * 2 + spineWidthIn + safeBleed * 2, 3);
   const fullCoverHeightIn = roundTo(trimHeightIn + safeBleed * 2, 3);
   const warnings: string[] = [];
   const pageRange = getKdpPageRange(input, trimWidthIn, trimHeightIn);
 
+  if (input.trimId === 'custom' && rawTrimWidthIn !== trimWidthIn) warnings.push(`Custom trim width was clamped to the KDP paperback range (${KDP_MIN_TRIM_WIDTH_IN}-${KDP_MAX_TRIM_WIDTH_IN} in).`);
+  if (input.trimId === 'custom' && rawTrimHeightIn !== trimHeightIn) warnings.push(`Custom trim height was clamped to the KDP paperback range (${KDP_MIN_TRIM_HEIGHT_IN}-${KDP_MAX_TRIM_HEIGHT_IN} in).`);
+  if (rawPageCount !== safePageCount) warnings.push(`Page count was clamped to ${safePageCount}; this calculator limits paperback planning inputs to 1-${KDP_MAX_PAGE_COUNT_INPUT} pages.`);
+  if (rawBleed !== safeBleed) warnings.push(`Bleed was clamped to ${formatInches(safeBleed, 3)} in; use 0-${KDP_MAX_BLEED_IN} in for this planner.`);
+  if (rawPpi !== safePpi) warnings.push(`PPI was clamped to ${safePpi}; use ${KDP_MIN_PPI}-${KDP_MAX_PPI} PPI for browser-safe exports.`);
+
   if (safePageCount < pageRange.min) warnings.push(`Page count is below the ${pageRange.label} range.`);
   if (safePageCount > pageRange.max) warnings.push(`Page count is above the ${pageRange.label} range.`);
   if (pageRange.source === 'custom-estimate') warnings.push('Custom trim page-count limits are estimated from the closest KDP paperback trim group; verify the final range in KDP.');
   if (safePageCount < 79) warnings.push('KDP does not allow spine text on paperbacks with fewer than 79 pages.');
-  if (trimWidthIn < 4 || trimHeightIn < 6) warnings.push('Custom paperback trim must be at least 4 × 6 in on KDP.');
-  if (trimWidthIn > 8.5 || trimHeightIn > 11.69) warnings.push('Custom paperback trim must be no larger than 8.5 × 11.69 in on KDP.');
+  if (input.trimId === 'custom' && (trimWidthIn <= KDP_MIN_TRIM_WIDTH_IN || trimHeightIn <= KDP_MIN_TRIM_HEIGHT_IN)) warnings.push('Custom paperback trim is at the lower KDP limit; verify the chosen trim in KDP before designing.');
+  if (input.trimId === 'custom' && (trimWidthIn >= KDP_MAX_TRIM_WIDTH_IN || trimHeightIn >= KDP_MAX_TRIM_HEIGHT_IN)) warnings.push('Custom paperback trim is at the upper KDP limit; verify the chosen trim in KDP before designing.');
   if (safeBleed < 0.125) warnings.push('KDP cover artwork usually needs 0.125 in bleed on outside edges.');
   if (safePpi < 300) warnings.push('Pixel canvas is below 300 PPI; print detail may be limited.');
 

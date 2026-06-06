@@ -39,7 +39,7 @@ check(!/upload\s*\(|fetch\([^)]*api|XMLHttpRequest|FormData/i.test(read('src/com
 check(read('vercel.json').includes('node scripts/skip-old-vercel-builds.mjs'), 'vercel ignoreCommand uses script');
 check(content.includes('guideRoots') && content.includes("['/guides/'") && content.includes("['/templates/'"), 'guide and template directory roots are real static routes');
 check(catchAll.includes('allRoutes.filter') && catchAll.includes("href !== '/'"), 'generateStaticParams covers allRoutes and excludes home');
-check(sitemap.includes('allRoutes.map'), 'sitemap is driven by allRoutes');
+check(sitemap.includes('allRoutes') && sitemap.includes('.map('), 'sitemap is driven by allRoutes');
 for (const href of ['/', ...staticContentRoutes, ...routes]) {
   if (href === '/') continue;
   check(content.includes(href) || toolPages.includes(href), `route source contains ${href}`);
@@ -59,7 +59,7 @@ check((specs.match(/sourceUrl:/g) || []).length >= expectedSpecCount, 'each plat
 check((specs.match(/lastCheckedAt:/g) || []).length >= expectedSpecCount, 'each platform spec has lastCheckedAt');
 check(allText.includes('Download SVG overlay') && allText.includes('Download PNG overlay'), 'overlay SVG and PNG downloads implemented');
 check(allText.includes('Your image stays in your browser') && allText.includes('We do not upload or store your file'), 'local image privacy notice present');
-check(allText.includes('FAQPage') && allText.includes('BreadcrumbList'), 'FAQ and breadcrumb JSON-LD implemented');
+check(allText.includes('WebApplication') && allText.includes('BreadcrumbList'), 'tool and breadcrumb JSON-LD implemented');
 for (const slug of [...p0Routes, ...p1Routes, ...p2Routes]) check(sitemap.includes('allRoutes') && toolPages.includes(`/image-size/${slug}/`), `sitemap source includes /image-size/${slug}/`);
 for (const token of ['ResultCard','CopyButton','RelatedTools','ImageUploadPreview','SafeZoneCanvas','OverlayDownloadButtons']) check(pixelClient.includes(token), `PixelFit client uses ${token}`);
 for (const token of ['PinterestRatioTool','CheckTool','MegapixelTool','RecommenderTool','FocalTool']) check(pixelClient.includes(token), `P1 tool implemented: ${token}`);

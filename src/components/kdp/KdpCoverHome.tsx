@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { coreTools, guides, templates } from '@/src/lib/content';
-import { calculateKdpCoverSize, formatInches, type KdpCoverInput } from '@/src/lib/kdp/cover';
+import { calculateKdpCoverSize, formatInches, KDP_MAX_BLEED_IN, KDP_MAX_PAGE_COUNT_INPUT, KDP_MAX_PPI, KDP_MAX_TRIM_HEIGHT_IN, KDP_MAX_TRIM_WIDTH_IN, KDP_MIN_PPI, KDP_MIN_TRIM_HEIGHT_IN, KDP_MIN_TRIM_WIDTH_IN, type KdpCoverInput } from '@/src/lib/kdp/cover';
 import { interiorLabel, kdpPresetById, kdpPresets, paperLabel, trimPresetById, trimPresets, type InteriorType, type PaperType, type ReadingDirection } from '@/src/lib/kdp/presets';
 import { KdpCoverPreview } from '@/src/components/kdp/KdpCoverPreview';
 import { KdpMetricStrip } from '@/src/components/kdp/KdpMetricStrip';
 import { KdpResultActions } from '@/src/components/kdp/KdpResultActions';
 import { getKdpSpreadOrder } from '@/src/lib/kdp/layout';
+import { safeJsonLd } from '@/src/lib/seo/jsonLd';
+import { ReviewSignal } from '@/src/components/seo/ReviewSignal';
 
 const defaultPreset = kdpPresetById('six-by-nine-paperback');
 const kdpHomeUrl = 'https://print.ymirtool.com/';
@@ -40,15 +42,10 @@ const kdpJsonLd = {
       operatingSystem: 'Any',
       url: kdpCalculatorUrl,
       description: 'Calculate KDP paperback cover file size, spine width, trim spread, bleed, barcode safe zone, and pixel canvas in the browser.',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
-    },
-    {
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map((item) => ({
-        '@type': 'Question',
-        name: item.question,
-        acceptedAnswer: { '@type': 'Answer', text: item.answer }
-      }))
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      creator: { '@type': 'Organization', name: 'Print Ready Tools', url: kdpHomeUrl },
+      dateModified: '2026-06-06',
+      image: 'https://print.ymirtool.com/og-image.png'
     },
     {
       '@type': 'BreadcrumbList',
@@ -77,10 +74,11 @@ function presetToInput(presetId: string): KdpCoverInput {
   };
 }
 
-function inputNumber(value: number, onChange: (value: number) => void, props?: { min?: number; step?: number }) {
+function inputNumber(value: number, onChange: (value: number) => void, props?: { min?: number; max?: number; step?: number }) {
   return {
     value: Number.isFinite(value) ? value : 0,
     min: props?.min,
+    max: props?.max,
     step: props?.step,
     onChange: (event: ChangeEvent<HTMLInputElement>) => onChange(Number(event.target.value))
   };
@@ -145,7 +143,7 @@ export function KdpCoverHome() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(kdpJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(kdpJsonLd) }} />
       <main className="kdp-home" aria-labelledby="kdp-home-title">
         <section className="kdp-hero-compact">
           <h1 id="kdp-home-title">KDP paperback cover size &amp; spine calculator</h1>
@@ -193,25 +191,25 @@ export function KdpCoverHome() {
               {draftInput.trimId === 'custom' && (
                 <>
                   <label className="kdp-field">Custom width
-                    <input type="number" {...inputNumber(draftInput.customWidthIn, (value) => update({ customWidthIn: value }), { min: 1, step: 0.01 })} />
+                    <input type="number" {...inputNumber(draftInput.customWidthIn, (value) => update({ customWidthIn: value }), { min: KDP_MIN_TRIM_WIDTH_IN, max: KDP_MAX_TRIM_WIDTH_IN, step: 0.01 })} />
                   </label>
                   <label className="kdp-field">Custom height
-                    <input type="number" {...inputNumber(draftInput.customHeightIn, (value) => update({ customHeightIn: value }), { min: 1, step: 0.01 })} />
+                    <input type="number" {...inputNumber(draftInput.customHeightIn, (value) => update({ customHeightIn: value }), { min: KDP_MIN_TRIM_HEIGHT_IN, max: KDP_MAX_TRIM_HEIGHT_IN, step: 0.01 })} />
                   </label>
                 </>
               )}
               <label className="kdp-field">Page count
-                <input type="number" {...inputNumber(draftInput.pageCount, (value) => update({ pageCount: value }), { min: 1, step: 1 })} />
+                <input type="number" {...inputNumber(draftInput.pageCount, (value) => update({ pageCount: value }), { min: 1, max: KDP_MAX_PAGE_COUNT_INPUT, step: 1 })} />
               </label>
               <div className="kdp-range-note">Min {draftResult.pageRange.min} - Max {draftResult.pageRange.max} pages · {draftResult.pageRange.label}</div>
               <label className="kdp-field">Bleed
                 <div className="kdp-inline-field">
-                  <input type="number" {...inputNumber(draftInput.bleedIn, (value) => update({ bleedIn: value }), { min: 0, step: 0.001 })} />
+                  <input type="number" {...inputNumber(draftInput.bleedIn, (value) => update({ bleedIn: value }), { min: 0, max: KDP_MAX_BLEED_IN, step: 0.001 })} />
                   <span>in</span>
                 </div>
               </label>
               <label className="kdp-field">DPI / PPI <small>(for pixel size only)</small>
-                <input type="number" {...inputNumber(draftInput.ppi, (value) => update({ ppi: value }), { min: 72, step: 1 })} />
+                <input type="number" {...inputNumber(draftInput.ppi, (value) => update({ ppi: value }), { min: KDP_MIN_PPI, max: KDP_MAX_PPI, step: 1 })} />
               </label>
             </div>
             <label className="kdp-toggle-row">Barcode safe zone
@@ -241,7 +239,11 @@ export function KdpCoverHome() {
             </div>
             <KdpCoverPreview result={result} showBarcode={confirmedInput.showBarcode} readingDirection={confirmedInput.readingDirection} />
             <p className={calculated ? 'kdp-status-line' : 'kdp-warning-line'}>{calculated ? `Calculated ${trim.label.toLowerCase()} paperback with ${confirmedInput.pageCount} pages, ${paperLabel(confirmedInput.paper).toLowerCase()}, ${formatInches(result.bleedIn, 3)} in bleed.` : 'Draft changed. Click Calculate cover size to update the preview, dimensions, copy text, and downloads.'}</p>
-            {result.warnings.length > 0 && <p className="kdp-warning-line">{result.warnings[0]}</p>}
+            {result.warnings.length > 0 && (
+              <div className="kdp-warning-list" role="status" aria-live="polite">
+                {result.warnings.map((warning) => <p className="kdp-warning-line" key={warning}>{warning}</p>)}
+              </div>
+            )}
             <div className="kdp-result-row">
               <div className="kdp-details-card">
                 <h3>Your cover file details</h3>
@@ -309,6 +311,7 @@ export function KdpCoverHome() {
           </div>
           <div className="card"><h2>Sources and limits</h2><p>This planning calculator estimates cover setup dimensions. Always verify the final file in KDP Previewer. This tool is independent and not affiliated with Amazon.</p><p><Link href="/disclaimer/">Learn more about formulas and limits</Link></p></div>
         </section>
+        <ReviewSignal reviewed="2026-06-06" scope="calculator" />
       </section>
     </>
   );

@@ -884,7 +884,7 @@ export const printArticles: PrintArticle[] = [
   {
     "path": "/guides/kdp-paperback-cover-rejection-checklist/",
     "title": "KDP paperback cover rejection checklist",
-    "description": "Use this KDP paperback cover rejection checklist before upload: full-spread PDF size, bleed, spine text, barcode area, image resolution, fonts, layers, and color setup.",
+    "description": "Use this KDP paperback cover rejection checklist before upload: PDF size, bleed, spine text, barcode area, image resolution, fonts, and color setup.",
     "updated": "2026-05-30",
     "category": "KDP cover setup",
     "primaryCta": {

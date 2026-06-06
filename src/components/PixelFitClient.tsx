@@ -38,6 +38,8 @@ import { RelatedTools } from '@/src/components/RelatedTools';
 import { ResultCard } from '@/src/components/ResultCard';
 import { RiskBadge } from '@/src/components/RiskBadge';
 import { SafeZoneCanvas } from '@/src/components/SafeZoneCanvas';
+import { safeJsonLd } from '@/src/lib/seo/jsonLd';
+import { absoluteUrl } from '@/src/lib/site';
 
 const PRINT_PRESETS = ['a4', 'a5', 'a3', 'letter', 'legal', 'business-card-us'];
 const PASSPORT_ALLOWED = [600, 900, 1200];
@@ -46,19 +48,7 @@ type RiskLevel = 'safe' | 'warning' | 'danger' | 'info';
 type Preset = { label: string; width: number; height: number };
 
 function jsonLd(data: unknown) {
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
-}
-
-function faqJsonLd(page: ToolPage) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: page.faq.map((item) => ({
-      '@type': 'Question',
-      name: item.question,
-      acceptedAnswer: { '@type': 'Answer', text: item.answer }
-    }))
-  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }} />;
 }
 
 function canonicalToolHref(page: ToolPage) {
@@ -78,6 +68,27 @@ function breadcrumbJsonLd(page: ToolPage) {
       { '@type': 'ListItem', position: 2, name: 'Image Size Tools', item: 'https://print.ymirtool.com/image-size/' },
       { '@type': 'ListItem', position: 3, name: page.title, item: `https://print.ymirtool.com${canonicalToolHref(page)}` }
     ]
+  };
+}
+
+function webApplicationJsonLd(page: ToolPage, source?: ImageSpec) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: page.title,
+    applicationCategory: 'DesignApplication',
+    operatingSystem: 'Any',
+    url: absoluteUrl(canonicalToolHref(page)),
+    description: page.description,
+    isAccessibleForFree: true,
+    browserRequirements: 'Runs in a modern browser. Uploaded images are analyzed locally in the browser.',
+    featureList: [
+      'Local image size and ratio checks',
+      'Deterministic print and platform calculations',
+      'Copyable results and source notes',
+      ...(source ? [`Source policy: ${source.sourceConfidence}`, `Last checked: ${source.lastCheckedAt}`] : [])
+    ],
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
   };
 }
 
@@ -150,17 +161,37 @@ function collectZones(spec: ImageSpec, preset?: Preset, captionMode: 'short' | '
   return [...(spec.safeZones || []), ...(spec.cropRiskZones || []), ...(spec.uiObstructionZones || [])];
 }
 
+function normalizeImageFormat(value: string): string {
+  const lower = value.toLowerCase();
+  if (lower.includes('png')) return 'png';
+  if (lower.includes('jpg') || lower.includes('jpeg')) return 'jpeg';
+  if (lower.includes('webp')) return 'webp';
+  if (lower.includes('gif')) return 'gif';
+  if (lower.includes('tif') || lower.includes('tiff')) return 'tiff';
+  if (lower.includes('bmp')) return 'bmp';
+  return lower.replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function fileSizeLimit(spec: ImageSpec) {
+  if (spec.maxFileSizeKB) return { mb: spec.maxFileSizeKB / 1024, label: `${spec.maxFileSizeKB}KB` };
+  if (spec.maxFileSizeMB) return { mb: spec.maxFileSizeMB, label: `${spec.maxFileSizeMB}MB` };
+  return null;
+}
+
 function imageChecklist(spec: ImageSpec, width: number, height: number, fileSizeMb: number, format = '') {
   const mp = megapixels(width, height);
   const ratio = spec.recommendedWidth && spec.recommendedHeight ? getRatioMismatch(width, height, spec.recommendedWidth, spec.recommendedHeight) : 0;
+  const normalizedFormat = normalizeImageFormat(format);
+  const allowedFormats = spec.supportedFormats?.map(normalizeImageFormat) || [];
+  const limit = fileSizeLimit(spec);
   const checks = [
     checklistItem('Minimum width', spec.minWidth ? width >= spec.minWidth : null, spec.minWidth ? `${width}px vs minimum ${spec.minWidth}px` : 'No minimum width listed for this spec.'),
     checklistItem('Minimum height', spec.minHeight ? height >= spec.minHeight : null, spec.minHeight ? `${height}px vs minimum ${spec.minHeight}px` : 'No minimum height listed for this spec.'),
     checklistItem('Recommended canvas', spec.recommendedWidth && spec.recommendedHeight ? width >= spec.recommendedWidth && height >= spec.recommendedHeight : null, spec.recommendedWidth && spec.recommendedHeight ? `${width}×${height}px vs ${spec.recommendedWidth}×${spec.recommendedHeight}px target` : 'No single recommended canvas.'),
     checklistItem('Aspect ratio', spec.recommendedWidth && spec.recommendedHeight ? ratio <= 0.025 : null, spec.recommendedWidth && spec.recommendedHeight ? `${round(ratio * 100, 2)}% ratio mismatch` : 'Variable ratio.'),
     checklistItem('Megapixels', spec.maxMegapixels ? mp <= spec.maxMegapixels : null, spec.maxMegapixels ? `${round(mp, 2)}MP vs maximum ${spec.maxMegapixels}MP` : `${round(mp, 2)}MP; no MP limit listed.`),
-    checklistItem('File size', spec.maxFileSizeMB ? fileSizeMb <= spec.maxFileSizeMB : null, spec.maxFileSizeMB ? `${round(fileSizeMb, 2)}MB vs maximum ${spec.maxFileSizeMB}MB` : `${round(fileSizeMb, 2)}MB; no MB limit listed.`),
-    checklistItem('Format', spec.supportedFormats?.length ? spec.supportedFormats.some((item) => format.toLowerCase().includes(item.toLowerCase().replace('jpg', 'jpeg'))) : null, spec.supportedFormats?.length ? `Allowed: ${spec.supportedFormats.join(', ')}` : 'No supported format list in this spec.')
+    checklistItem('File size', limit ? fileSizeMb <= limit.mb : null, limit ? `${round(fileSizeMb, 3)}MB vs maximum ${limit.label}` : `${round(fileSizeMb, 2)}MB; no file-size limit listed.`),
+    checklistItem('Format', allowedFormats.length ? allowedFormats.includes(normalizedFormat) : null, spec.supportedFormats?.length ? `Detected ${normalizedFormat || 'unknown'}; allowed: ${spec.supportedFormats.join(', ')}` : 'No supported format list in this spec.')
   ];
   const dangerCount = checks.filter((item) => item.level === 'danger').length;
   const warningCount = checks.filter((item) => item.level === 'info').length;
@@ -170,7 +201,7 @@ function imageChecklist(spec: ImageSpec, width: number, height: number, fileSize
 function Shell({ page, children, source }: { page: ToolPage; children: ReactNode; source?: ImageSpec }) {
   return (
     <main className="container stack">
-      {jsonLd(faqJsonLd(page))}
+      {jsonLd(webApplicationJsonLd(page, source))}
       {jsonLd(breadcrumbJsonLd(page))}
       <section className="hero tool-hero">
         <p className="small"><Link href="/image-size/">PixelFit image tools</Link></p>
@@ -178,6 +209,11 @@ function Shell({ page, children, source }: { page: ToolPage; children: ReactNode
         <p className="lede">{page.description}</p>
       </section>
       <section className="tool workspace stack">{children}</section>
+      <section className="card stack">
+        <h2>How to use this result</h2>
+        <p>Start with the target surface: a printed size, a platform canvas, a marketplace image requirement, or a safe-zone overlay. Enter the real pixel dimensions or upload a local image when the tool supports it, then compare the result with the recommended size, ratio, file-size limit, and source note.</p>
+        <p>Use the copied output as a production checklist rather than as an approval guarantee. The calculator checks measurable dimensions and ratios, while final acceptance can still depend on compression, color, account settings, crop previews, platform policy, or printer-specific export instructions.</p>
+      </section>
       <section className="card">
         <h2>FAQ</h2>
         {page.faq.map((item) => <p key={item.question}><strong>{item.question}</strong><br />{item.answer}</p>)}
@@ -186,7 +222,7 @@ function Shell({ page, children, source }: { page: ToolPage; children: ReactNode
       <section className="card source-note">
         <h2>Sources and limits</h2>
         {source ? (
-          <p><strong>{source.sourceConfidence}</strong>: <a href={source.sourceUrl}>{source.sourceLabel}</a>. Last checked {source.lastCheckedAt}.</p>
+          <p><strong>{source.sourceConfidence}</strong>: <a href={source.sourceUrl} target="_blank" rel="noopener noreferrer nofollow">{source.sourceLabel}</a>. Last checked {source.lastCheckedAt}.</p>
         ) : (
           <p>Print formulas use standard inch, cm, mm and PPI conversions. Last checked {sourcePolicy.lastReviewedAt}.</p>
         )}
@@ -208,7 +244,7 @@ function Hub({ page }: { page: ToolPage }) {
 
   return (
     <main className="container stack">
-      {jsonLd(faqJsonLd(page))}
+      {jsonLd(webApplicationJsonLd(page))}
       {jsonLd(breadcrumbJsonLd(page))}
       <section className="hero">
         <p className="small"><strong>PixelFit for print.ymirtool.com</strong></p>

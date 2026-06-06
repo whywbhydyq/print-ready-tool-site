@@ -5,6 +5,8 @@ import { formatInches, type KdpCoverResult } from '@/src/lib/kdp/cover';
 import { getKdpBarcodeBox, getKdpSpreadOrder } from '@/src/lib/kdp/layout';
 import type { ReadingDirection } from '@/src/lib/kdp/presets';
 
+const MAX_PNG_EXPORT_PIXELS = 100_000_000;
+
 type Props = {
   result: KdpCoverResult;
   summary: string;
@@ -45,6 +47,8 @@ function buildSvgGuide(result: KdpCoverResult, readingDirection: ReadingDirectio
   const rightX = spineX + spineWidth;
   const safeInset = 0.25 * scale;
   const order = getKdpSpreadOrder(readingDirection);
+  const pngPixelCount = result.pixelWidth * result.pixelHeight;
+  const pngExportAllowed = Number.isFinite(pngPixelCount) && pngPixelCount <= MAX_PNG_EXPORT_PIXELS;
   const barcodeBox = getKdpBarcodeBox(result, readingDirection);
   const barcodeX = barcodeBox.xIn * scale;
   const barcodeY = barcodeBox.yIn * scale;
@@ -77,6 +81,8 @@ export function KdpResultActions({ result, summary, readingDirection, showBarcod
   const svg = buildSvgGuide(result, readingDirection, showBarcode);
   const baseName = guideBaseName(result);
   const order = getKdpSpreadOrder(readingDirection);
+  const pngPixelCount = result.pixelWidth * result.pixelHeight;
+  const pngExportAllowed = Number.isFinite(pngPixelCount) && pngPixelCount <= MAX_PNG_EXPORT_PIXELS;
   const figmaSetup = `KDP cover setup
 Canvas incl. bleed: ${formatInches(result.fullCoverWidthIn, 3)} × ${formatInches(result.fullCoverHeightIn, 2)} in
 Trim spread: ${formatInches(result.trimSpreadWidthIn, 3)} × ${formatInches(result.trimHeightIn, 2)} in
@@ -100,6 +106,11 @@ Barcode safe zone: ${showBarcode ? `${formatInches(result.barcodeSafeZone.widthI
   };
 
   const downloadPng = () => {
+    if (!pngExportAllowed) {
+      setCopied('png-too-large');
+      window.setTimeout(() => setCopied((current) => (current === 'png-too-large' ? null : current)), 2600);
+      return;
+    }
     const image = new Image();
     const svgUrl = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
     image.onload = () => {
@@ -128,9 +139,11 @@ Barcode safe zone: ${showBarcode ? `${formatInches(result.barcodeSafeZone.widthI
       <button type="button" className="kdp-action-button" disabled={disabled} onClick={() => copy('dimensions', summary)}>{disabled ? 'Calculate first' : copied === 'dimensions' ? 'Copied' : 'Copy dimensions'}</button>
       <button type="button" className="kdp-action-button" disabled={disabled} onClick={() => copy('setup', figmaSetup)}>{disabled ? 'Calculate first' : copied === 'setup' ? 'Copied' : 'Copy Photoshop / Figma setup'}</button>
       <button type="button" className="kdp-action-button" disabled={disabled} onClick={() => downloadTextFile(`${baseName}.svg`, 'image/svg+xml', svg)}>Download SVG guide</button>
-      <button type="button" className="kdp-action-button" disabled={disabled} onClick={downloadPng}>Download PNG guide</button>
+      <button type="button" className="kdp-action-button" disabled={disabled || !pngExportAllowed} onClick={downloadPng}>Download PNG guide</button>
       <button type="button" className="kdp-action-button" disabled={disabled} onClick={() => window.print()}>Print setup</button>
       {copied === 'failed' && <p className="kdp-copy-error">Copy failed — select and copy manually.</p>}
+      {copied === 'png-too-large' && <p className="kdp-copy-error">PNG guide is too large for safe browser export. Use SVG instead.</p>}
+      {!pngExportAllowed && <p className="kdp-copy-error">PNG disabled above {Math.round(MAX_PNG_EXPORT_PIXELS / 1_000_000)}MP; SVG remains available.</p>}
     </div>
   );
 }

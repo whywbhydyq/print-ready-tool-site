@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import type { PrintArticle } from '@/src/lib/printArticles';
 import { absoluteUrl } from '@/src/lib/site';
+import { safeJsonLd } from '@/src/lib/seo/jsonLd';
+import { ReviewSignal } from '@/src/components/seo/ReviewSignal';
 
 function canonicalInternalHref(href: string) {
   return href === '/kdp-cover-calculator' || href === '/kdp-cover-calculator/' ? '/' : href;
@@ -18,15 +20,8 @@ function articleJsonLd(article: PrintArticle) {
         datePublished: article.updated,
         mainEntityOfPage: absoluteUrl(article.path),
         author: { '@type': 'Organization', name: 'Print Ready Tools' },
-        publisher: { '@type': 'Organization', name: 'Print Ready Tools' }
-      },
-      {
-        '@type': 'FAQPage',
-        mainEntity: article.faq.map((item) => ({
-          '@type': 'Question',
-          name: item.question,
-          acceptedAnswer: { '@type': 'Answer', text: item.answer }
-        }))
+        publisher: { '@type': 'Organization', name: 'Print Ready Tools' },
+        image: absoluteUrl('/og-image.png')
       },
       {
         '@type': 'BreadcrumbList',
@@ -43,9 +38,9 @@ function articleJsonLd(article: PrintArticle) {
 export function PrintArticlePage({ article }: { article: PrintArticle }) {
   return (
     <main className="container stack print-article-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(article)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(articleJsonLd(article)) }} />
       <article className="card print-article">
-        <p className="small muted">{article.category} · Updated {article.updated}</p>
+        <p className="small muted">{article.category} · Updated {article.updated} · Reviewed by Print Ready Tools</p>
         <h1>{article.title}</h1>
         <p className="lede">{article.description}</p>
         <p className="buttonrow">
@@ -76,6 +71,7 @@ export function PrintArticlePage({ article }: { article: PrintArticle }) {
             )}
           </section>
         ))}
+        <ReviewSignal reviewed={article.updated} scope="guide" />
       </article>
 
       <section className="grid print-article-support" aria-label="Article support links">
