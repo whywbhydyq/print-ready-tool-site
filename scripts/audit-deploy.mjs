@@ -20,19 +20,19 @@ const npmrc = fs.existsSync('.npmrc') ? fs.readFileSync('.npmrc', 'utf8') : '';
 
 const runtimeDeps = Object.keys(pkg.dependencies || {}).sort();
 const devDeps = Object.keys(pkg.devDependencies || {}).sort();
-const expectedRuntimeDeps = ['next', 'react', 'react-dom'];
+const expectedRuntimeDeps = ['@types/node', '@types/react', '@types/react-dom', 'next', 'react', 'react-dom', 'typescript'];
+const expectedDevDeps = ['eslint', 'eslint-config-next'];
 
 assert(pkg.engines?.node === '22.x', 'package.json must pin engines.node to 22.x for Vercel stability');
 assert(/^npm@10\./.test(pkg.packageManager || ''), 'package.json must pin packageManager to npm@10.x');
 assert(JSON.stringify(runtimeDeps) === JSON.stringify(expectedRuntimeDeps), `runtime dependencies should be only ${expectedRuntimeDeps.join(', ')}; got ${runtimeDeps.join(', ')}`);
-for (const name of ['typescript', '@types/node', '@types/react', '@types/react-dom', 'eslint', 'eslint-config-next']) {
-  assert(devDeps.includes(name), `${name} must be in devDependencies for build-time use`);
-}
+assert(JSON.stringify(devDeps) === JSON.stringify(expectedDevDeps), `devDependencies should be only ${expectedDevDeps.join(', ')}; got ${devDeps.join(', ')}`);
 assert(lock.lockfileVersion === 3, 'package-lock.json must use lockfileVersion 3');
 assert(lock.packages?.['']?.engines?.node === '22.x', 'package-lock root package must include engines.node 22.x');
 assert(vercel.framework === 'nextjs', 'vercel.json framework must stay nextjs');
-assert(vercel.installCommand === 'npm ci --include=dev --no-audit --no-fund --ignore-scripts', 'vercel.json installCommand must use deterministic npm ci and skip dependency install scripts');
-assert(vercel.buildCommand === 'npm run build', 'vercel.json buildCommand must stay npm run build');
+assert(vercel.installCommand === 'npm ci --omit=dev --no-audit --no-fund --ignore-scripts', 'vercel.json installCommand must use production-only deterministic npm ci and skip dependency install scripts');
+assert(vercel.buildCommand === 'node_modules/.bin/next build', 'vercel.json buildCommand must call Next directly and must not trigger npm prebuild');
+assert(vercel.buildCommand !== 'npm run build', 'Vercel must not use npm run build because package prebuild installs/needs local quality gates');
 assert(/audit=false/.test(npmrc), '.npmrc must disable npm audit during install');
 assert(/fund=false/.test(npmrc), '.npmrc must disable npm funding prompts');
 assert(/progress=false/.test(npmrc), '.npmrc must disable install progress output');
@@ -45,6 +45,7 @@ for (const item of installScriptPackages) {
   assert(allowedInstallScriptPackages.has(item.path), `${item.path} has an install script and is not allowlisted`);
 }
 assert(vercel.installCommand.includes('--ignore-scripts'), 'vercel installCommand must include --ignore-scripts because the lockfile contains native/optional install scripts');
+assert(vercel.installCommand.includes('--omit=dev'), 'vercel installCommand must omit dev dependencies to avoid npm hanging on the ESLint dev dependency tree in Vercel');
 
 if (fail.length) {
   console.error('Deployment audit failed:');
