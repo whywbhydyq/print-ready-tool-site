@@ -5,6 +5,7 @@ import path from 'node:path';
 const baseUrl = (process.env.LOCAL_SEO_BASE_URL || 'http://127.0.0.1:3000').replace(/\/$/, '');
 const outDir = process.env.LOCAL_SEO_OUT_DIR || '.seo-cache';
 const maxInternalLinkFetches = Number(process.env.LOCAL_SEO_MAX_LINK_FETCHES || 200);
+const fetchTimeoutMs = Number(process.env.LOCAL_SEO_FETCH_TIMEOUT_MS || 15000);
 
 const requiredHeaders = [
   'content-security-policy',
@@ -85,14 +86,24 @@ function normalizeInternalHref(href) {
   return withoutHash.endsWith('/') ? withoutHash : `${withoutHash}/`;
 }
 
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), fetchTimeoutMs);
+  try {
+    return await fetch(url, { redirect: 'manual', ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function fetchText(url, options = {}) {
-  const response = await fetch(url, { redirect: 'manual', ...options });
+  const response = await fetchWithTimeout(url, options);
   const text = await response.text();
   return { status: response.status, headers: Object.fromEntries(response.headers.entries()), text };
 }
 
 async function fetchHead(url) {
-  const response = await fetch(url, { method: 'HEAD', redirect: 'manual' });
+  const response = await fetchWithTimeout(url, { method: 'HEAD' });
   return { status: response.status, headers: Object.fromEntries(response.headers.entries()) };
 }
 
@@ -253,8 +264,12 @@ async function main() {
   const linkChecks = [];
   const linksToFetch = [...discoveredLinks].filter((link) => !routeSet.has(link)).slice(0, maxInternalLinkFetches);
   for (const link of linksToFetch) {
-    const response = await fetch(`${baseUrl}${link}`, { redirect: 'manual' });
-    linkChecks.push({ href: link, status: response.status, knownCanonical: routeSet.has(link) });
+    try {
+      const response = await fetchWithTimeout(`${baseUrl}${link}`);
+      linkChecks.push({ href: link, status: response.status, knownCanonical: routeSet.has(link) });
+    } catch (error) {
+      linkChecks.push({ href: link, status: 0, knownCanonical: routeSet.has(link), error: error instanceof Error ? error.message : String(error) });
+    }
   }
 
   const globalIssues = [
@@ -267,7 +282,7 @@ async function main() {
     ...siteResources.clusters.issues.map((issue) => `clusters: ${issue}`)
   ];
   const failingPages = results.filter((result) => result.issues.length > 0);
-  const failingLinks = linkChecks.filter((item) => item.status >= 400);
+  const failingLinks = linkChecks.filter((item) => item.status === 0 || item.status >= 400);
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const report = { baseUrl, generatedAt: new Date().toISOString(), routeCount: routes.length, failingPageCount: failingPages.length, failingLinkCount: failingLinks.length, globalIssueCount: globalIssues.length, sitemap, siteResources, globalIssues, results, linkChecks };
   const jsonPath = path.join(outDir, `local-seo-crawl-${timestamp}.json`);
@@ -291,7 +306,7 @@ async function main() {
     failingPages.length ? failingPages.map((page) => `- ${page.route}: ${page.issues.join('; ')}`).join('\n') : 'None.',
     '',
     '## Broken internal links',
-    failingLinks.length ? failingLinks.map((link) => `- ${link.href}: ${link.status}`).join('\n') : 'None.'
+    failingLinks.length ? failingLinks.map((link) => `- ${link.href}: ${link.status}${link.error ? ` (${link.error})` : ''}`).join('\n') : 'None.'
   ].join('\n'));
 
   console.log(`Routes checked: ${routes.length}`);
