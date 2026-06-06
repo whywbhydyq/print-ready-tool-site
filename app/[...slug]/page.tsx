@@ -28,7 +28,7 @@ const extra: Record<string, string> = {
   '/templates/kdp-cover-setup-checklist/': 'KDP cover checklist: calculate trim, spine and bleed; create one PDF with back cover, spine and front cover; keep text in the safe zone; leave barcode space; verify with the official KDP previewer.',
   '/templates/print-ready-pdf-checklist/': 'Print-ready PDF checklist: correct page size, required bleed, embedded fonts, high-resolution images, safe-zone content, correct color profile, and printer-specific export settings.'
 };
-type PageProps = { params: Promise<{ slug: string[] }> };
+type PageProps = { params: { slug: string[] } };
 function pathFromSlug(slug: string[]) { return '/' + slug.join('/') + '/'; }
 export const dynamicParams = false;
 export function generateStaticParams() { return allRoutes.filter((href) => href !== '/').map((href) => ({ slug: href.split('/').filter(Boolean) })); }
@@ -84,7 +84,7 @@ const trustDetails: Record<string, { heading: string; body: string[] }[]> = {
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug } = params;
   const path = pathFromSlug(slug);
   const article = articleByPath(path);
   if (article) {
@@ -111,7 +111,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return { title, description, alternates: { canonical: absoluteUrl(path) }, openGraph: { title, description, url: absoluteUrl(path), siteName: 'Print Ready Tools', type: staticPage?.kind === 'guide' ? 'article' : 'website', images: openGraphImage() }, twitter: { card: 'summary_large_image', title, description, images: twitterImages() } };
 }
 export default async function Page({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug } = params;
   const path = pathFromSlug(slug);
   const article = articleByPath(path);
   if (article) return <PrintArticlePage article={article} />;

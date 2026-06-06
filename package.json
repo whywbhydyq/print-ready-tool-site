@@ -2,10 +2,6 @@
   "name": "print-ready-tool-site",
   "version": "0.3.0",
   "private": true,
-  "packageManager": "pnpm@9.15.9",
-  "engines": {
-    "node": "22.x"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,34 +9,25 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc --noEmit",
     "audit:pixelfit": "node scripts/audit-pixelfit.mjs",
-    "audit:deploy": "node scripts/audit-deploy.mjs",
-    "check:all": "pnpm run typecheck && pnpm run lint && pnpm run test:calculations && NEXT_TELEMETRY_DISABLED=1 pnpm run build && pnpm run audit:pixelfit",
+    "check:all": "npm run typecheck && npm run lint && npm run test:calculations && NEXT_TELEMETRY_DISABLED=1 npm run build && npm run audit:pixelfit",
     "test:calculations": "node scripts/test-pixelfit-calculations.mjs",
-    "prebuild": "pnpm run typecheck && pnpm run lint",
+    "prebuild": "npm run typecheck && npm run lint",
     "test:http": "node tests/http-smoke.mjs",
     "test:ui": "node tests/ui-smoke.mjs",
     "seo:crawl": "node scripts/local-seo-crawl.mjs",
     "seo:drift": "node scripts/seo-drift.mjs"
   },
   "dependencies": {
-    "@types/node": "20.19.41",
-    "@types/react": "18.3.29",
-    "@types/react-dom": "18.3.7",
-    "next": "15.5.19",
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.2.67",
+    "@types/react-dom": "^18.2.22",
+    "next": "14.2.35",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "5.9.3"
+    "typescript": "^5.4.2"
   },
   "devDependencies": {
-    "eslint": "8.57.1",
-    "eslint-config-next": "15.5.19"
-  },
-  "overrides": {
-    "postcss": "8.5.15"
-  },
-  "pnpm": {
-    "overrides": {
-      "postcss": "8.5.15"
-    }
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.35"
   }
 }
