@@ -31,11 +31,20 @@ for (const name of ['typescript', '@types/node', '@types/react', '@types/react-d
 assert(lock.lockfileVersion === 3, 'package-lock.json must use lockfileVersion 3');
 assert(lock.packages?.['']?.engines?.node === '22.x', 'package-lock root package must include engines.node 22.x');
 assert(vercel.framework === 'nextjs', 'vercel.json framework must stay nextjs');
-assert(vercel.installCommand === 'npm ci --include=dev --no-audit --no-fund', 'vercel.json installCommand must use deterministic npm ci');
+assert(vercel.installCommand === 'npm ci --include=dev --no-audit --no-fund --ignore-scripts', 'vercel.json installCommand must use deterministic npm ci and skip dependency install scripts');
 assert(vercel.buildCommand === 'npm run build', 'vercel.json buildCommand must stay npm run build');
 assert(/audit=false/.test(npmrc), '.npmrc must disable npm audit during install');
 assert(/fund=false/.test(npmrc), '.npmrc must disable npm funding prompts');
 assert(/progress=false/.test(npmrc), '.npmrc must disable install progress output');
+
+const installScriptPackages = Object.entries(lock.packages || {})
+  .filter(([, value]) => value?.hasInstallScript)
+  .map(([path, value]) => ({ path, version: value.version, optional: Boolean(value.optional), dev: Boolean(value.dev) }));
+const allowedInstallScriptPackages = new Set(['node_modules/sharp', 'node_modules/unrs-resolver']);
+for (const item of installScriptPackages) {
+  assert(allowedInstallScriptPackages.has(item.path), `${item.path} has an install script and is not allowlisted`);
+}
+assert(vercel.installCommand.includes('--ignore-scripts'), 'vercel installCommand must include --ignore-scripts because the lockfile contains native/optional install scripts');
 
 if (fail.length) {
   console.error('Deployment audit failed:');
