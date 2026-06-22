@@ -16,7 +16,7 @@ const manualSources: SourceRegistryItem[] = [
     href: 'https://kdp.amazon.com/en_US/help/topic/G201953020',
     category: 'KDP',
     confidence: 'official',
-    lastCheckedAt: '2026-06-06',
+    lastCheckedAt: '2026-06-22',
     usedFor: 'KDP cover bleed, trim, PDF and paperback cover planning guidance.'
   },
   {
@@ -24,7 +24,7 @@ const manualSources: SourceRegistryItem[] = [
     href: 'https://kdp.amazon.com/cover-calculator',
     category: 'KDP',
     confidence: 'official',
-    lastCheckedAt: '2026-06-06',
+    lastCheckedAt: '2026-06-22',
     usedFor: 'Final KDP template checks, cover spread verification and paperback preview workflow.'
   },
   {

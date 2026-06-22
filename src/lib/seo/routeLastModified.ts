@@ -11,7 +11,7 @@ const staticDateByPath = Object.fromEntries(staticPages.map((page) => [page.path
 const pixelDateByPath = Object.fromEntries(toolPages.map((page) => [page.href, page.specId ? specLastCheckedById[page.specId] || siteRefreshDate : siteRefreshDate]));
 
 const staticToolDates: Record<string, string> = {
-  '/': siteRefreshDate,
+  '/': '2026-06-22',
   '/kdp-interior-bleed-calculator/': siteRefreshDate,
   '/image-print-quality-checker/': siteRefreshDate,
   '/bleed-safe-zone-calculator/': siteRefreshDate,

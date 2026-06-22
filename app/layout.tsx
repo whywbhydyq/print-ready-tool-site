@@ -6,7 +6,7 @@ import { absoluteUrl, siteUrl } from '@/src/lib/site';
 import { safeJsonLd } from '@/src/lib/seo/jsonLd';
 import { openGraphImage, twitterImages } from '@/src/lib/seo/social';
 
-const description = 'Calculate KDP cover size, spine width, bleed, barcode safe zone, image pixels, DPI, and print readiness before uploading or printing.';
+const description = 'Use a KDP cover calculator for cover size, spine width, bleed, barcode safe zone, image pixels, DPI, and print readiness before uploading.';
 
 const siteJsonLd = {
   '@context': 'https://schema.org',
@@ -35,14 +35,14 @@ const siteJsonLd = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: 'KDP Cover Size & Spine Calculator - Print Ready Tool', template: '%s | Print Ready Tools' },
+  title: { default: 'KDP Cover Calculator - Spine & Bleed', template: '%s | Print Ready Tools' },
   description,
   other: {
     'baidu-site-verification': 'codeva-RtAtAyOcTn',
     'google-adsense-account': 'ca-pub-1653188471819736'
   },
-  openGraph: { title: 'KDP Cover Size & Spine Calculator', description, url: siteUrl, siteName: 'Print Ready Tools', type: 'website', images: openGraphImage() },
-  twitter: { card: 'summary_large_image', title: 'KDP Cover Size & Spine Calculator', description, images: twitterImages() }
+  openGraph: { title: 'KDP Cover Calculator - Spine & Bleed', description, url: siteUrl, siteName: 'Print Ready Tools', type: 'website', images: openGraphImage() },
+  twitter: { card: 'summary_large_image', title: 'KDP Cover Calculator - Spine & Bleed', description, images: twitterImages() }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

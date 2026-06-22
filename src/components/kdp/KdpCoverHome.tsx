@@ -37,14 +37,14 @@ const kdpJsonLd = {
   '@graph': [
     {
       '@type': 'WebApplication',
-      name: 'KDP Cover Size & Spine Calculator',
+      name: 'KDP Cover Calculator',
       applicationCategory: 'DesignApplication',
       operatingSystem: 'Any',
       url: kdpCalculatorUrl,
       description: 'Calculate KDP paperback cover file size, spine width, trim spread, bleed, barcode safe zone, and pixel canvas in the browser.',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       creator: { '@type': 'Organization', name: 'Print Ready Tools', url: kdpHomeUrl },
-      dateModified: '2026-06-06',
+      dateModified: '2026-06-22',
       image: 'https://print.ymirtool.com/og-image.png'
     },
     {
@@ -146,8 +146,8 @@ export function KdpCoverHome() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(kdpJsonLd) }} />
       <main className="kdp-home" aria-labelledby="kdp-home-title">
         <section className="kdp-hero-compact">
-          <h1 id="kdp-home-title">KDP paperback cover size &amp; spine calculator</h1>
-          <p>Enter trim size, page count, paper type, and bleed. Get cover file size, spine width, barcode safe zone, and pixel canvas before uploading to KDP.</p>
+          <h1 id="kdp-home-title">KDP cover calculator for paperback size and spine</h1>
+          <p>Enter trim size, page count, paper type, and bleed. Calculate cover file size, spine width, barcode safe zone, trim spread, and pixel canvas before uploading to KDP.</p>
           <div className="kdp-trust-row" aria-label="Trust and privacy notes">
             <span>Independent planning tool</span>
             <span>No file upload</span>
@@ -311,7 +311,7 @@ export function KdpCoverHome() {
           </div>
           <div className="card"><h2>Sources and limits</h2><p>This planning calculator estimates cover setup dimensions. Always verify the final file in KDP Previewer. This tool is independent and not affiliated with Amazon.</p><p><Link href="/disclaimer/">Learn more about formulas and limits</Link></p></div>
         </section>
-        <ReviewSignal reviewed="2026-06-06" scope="calculator" />
+        <ReviewSignal reviewed="2026-06-22" scope="calculator" />
       </section>
     </>
   );
