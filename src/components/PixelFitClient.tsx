@@ -47,6 +47,15 @@ const PASSPORT_ALLOWED = [600, 900, 1200];
 type RiskLevel = 'safe' | 'warning' | 'danger' | 'info';
 type Preset = { label: string; width: number; height: number };
 
+const aspectRatioExamples = [
+  { ratio: '1:1', pixels: '1080 x 1080', use: 'Square product photos, app icons, profile images and social posts.' },
+  { ratio: '4:5', pixels: '1080 x 1350', use: 'Portrait social images and 8x10 print crops.' },
+  { ratio: '3:2', pixels: '3000 x 2000', use: 'Camera photos, 4x6 prints and landscape artwork.' },
+  { ratio: '2:3', pixels: '2000 x 3000', use: 'Portrait photos, 12x18 posters and printable wall art.' },
+  { ratio: '16:9', pixels: '1920 x 1080', use: 'Video thumbnails, website hero images and widescreen canvases.' },
+  { ratio: '9:16', pixels: '1080 x 1920', use: 'Short-form video covers, stories and vertical mobile images.' }
+];
+
 function jsonLd(data: unknown) {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }} />;
 }
@@ -89,6 +98,21 @@ function webApplicationJsonLd(page: ToolPage, source?: ImageSpec) {
       ...(source ? [`Source policy: ${source.sourceConfidence}`, `Last checked: ${source.lastCheckedAt}`] : [])
     ],
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
+  };
+}
+
+function faqPageJsonLd(page: ToolPage) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: page.faq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer
+      }
+    }))
   };
 }
 
@@ -198,17 +222,19 @@ function imageChecklist(spec: ImageSpec, width: number, height: number, fileSize
   return { checks, level: dangerCount ? 'danger' as const : warningCount ? 'warning' as const : 'safe' as const, mp, ratioMismatch: ratio };
 }
 
-function Shell({ page, children, source }: { page: ToolPage; children: ReactNode; source?: ImageSpec }) {
+function Shell({ page, children, source, extraContent }: { page: ToolPage; children: ReactNode; source?: ImageSpec; extraContent?: ReactNode }) {
   return (
     <main className="container stack">
       {jsonLd(webApplicationJsonLd(page, source))}
       {jsonLd(breadcrumbJsonLd(page))}
+      {page.faq.length > 0 && jsonLd(faqPageJsonLd(page))}
       <section className="hero tool-hero">
         <p className="small"><Link href="/image-size/">PixelFit image tools</Link></p>
         <h1>{page.title}</h1>
         <p className="lede">{page.description}</p>
       </section>
       <section className="tool workspace stack">{children}</section>
+      {extraContent}
       <section className="card stack">
         <h2>How to use this result</h2>
         <p>Start with the target surface: a printed size, a platform canvas, a marketplace image requirement, or a safe-zone overlay. Enter the real pixel dimensions or upload a local image when the tool supports it, then compare the result with the recommended size, ratio, file-size limit, and source note.</p>
@@ -277,6 +303,30 @@ function NumberField({ label, value, set, step = 1, min = 0 }: { label: string; 
   return <label>{label}<input type="number" min={min} step={step} value={Number.isFinite(value) ? value : ''} onChange={(event) => set(Number(event.target.value))} /></label>;
 }
 
+function AspectRatioGuide() {
+  return (
+    <>
+      <section className="card stack">
+        <h2>Common image ratios</h2>
+        <p>Use this image ratio table before cropping artwork, product photos, thumbnails, printable files or social media exports. The same ratio can be scaled to any pixel size.</p>
+        <table>
+          <thead><tr><th>Ratio</th><th>Example pixels</th><th>Common use</th></tr></thead>
+          <tbody>
+            {aspectRatioExamples.map((item) => <tr key={item.ratio}><td><strong>{item.ratio}</strong></td><td>{item.pixels}</td><td>{item.use}</td></tr>)}
+          </tbody>
+        </table>
+      </section>
+      <section className="card stack">
+        <h2>How the aspect ratio math works</h2>
+        <p>To simplify a pixel ratio, divide the image width and height by the largest number that divides both values. For example, 2400 x 3000 reduces to 4:5, and 3840 x 2160 reduces to 16:9.</p>
+        <p>For proportional resizing, keep the same ratio: new height = new width x ratio height / ratio width. If you know the target height instead, use new width = new height x ratio width / ratio height.</p>
+        <p>Use crop fit when the destination frame must be filled edge to edge. Use padding fit when the full image must stay visible, such as a product image, portrait, logo, printable artwork or cover design.</p>
+        <p className="small"><Link href="/image-size/youtube-thumbnail-safe-zone/">Check a YouTube thumbnail</Link> or <Link href="/image-size/cm-to-pixels/">convert print dimensions to pixels</Link> after choosing the ratio.</p>
+      </section>
+    </>
+  );
+}
+
 function AspectTool({ page }: { page: ToolPage }) {
   const [width, setWidth] = useState(1920);
   const [height, setHeight] = useState(1080);
@@ -296,7 +346,7 @@ function AspectTool({ page }: { page: ToolPage }) {
   const summary = `${width}×${height}px simplifies to ${ratio.label}${common ? ` (${common.label})` : ''}. Target ${target}. ${targetWidth}px wide should be ${fitHeight}px high; ${targetHeight}px high should be ${fitWidth}px wide. Crop fit ${crop.width}×${crop.height}; padding canvas ${pad.width}×${pad.height}.`;
 
   return (
-    <Shell page={page}>
+    <Shell page={page} extraContent={<AspectRatioGuide />}>
       <div className="formgrid">
         <NumberField label="Image width px" value={width} set={setWidth} min={1} />
         <NumberField label="Image height px" value={height} set={setHeight} min={1} />
