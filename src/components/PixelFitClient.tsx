@@ -56,6 +56,20 @@ const aspectRatioExamples = [
   { ratio: '9:16', pixels: '1080 x 1920', use: 'Short-form video covers, stories and vertical mobile images.' }
 ];
 
+const aspectRatioTasks = [
+  { task: 'Find an image ratio from pixels', input: 'Enter the current width and height', result: 'Simplified ratio, decimal ratio and closest common ratio' },
+  { task: 'Resize without distortion', input: 'Enter a target width or target height', result: 'Matching height or width that keeps the same proportion' },
+  { task: 'Fit an image into a fixed frame', input: 'Choose 1:1, 4:5, 3:2, 2:3, 16:9 or 9:16', result: 'Crop dimensions, padding canvas and percent of pixels affected' },
+  { task: 'Prepare print or marketplace artwork', input: 'Compare the image ratio with the product, paper or social target', result: 'Whether to crop, pad or choose a different export size' }
+];
+
+const aspectRatioFormulaExamples = [
+  { input: '1920 x 1080', gcd: '120', ratio: '16:9', use: 'Widescreen video, thumbnails and website media' },
+  { input: '2400 x 3000', gcd: '600', ratio: '4:5', use: '8x10 prints and portrait social crops' },
+  { input: '3000 x 2000', gcd: '1000', ratio: '3:2', use: 'Camera photos and 4x6 prints' },
+  { input: '2000 x 3000', gcd: '1000', ratio: '2:3', use: 'Portrait posters and printable wall art' }
+];
+
 function jsonLd(data: unknown) {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }} />;
 }
@@ -322,6 +336,27 @@ function AspectRatioGuide() {
         <p>For proportional resizing, keep the same ratio: new height = new width x ratio height / ratio width. If you know the target height instead, use new width = new height x ratio width / ratio height.</p>
         <p>Use crop fit when the destination frame must be filled edge to edge. Use padding fit when the full image must stay visible, such as a product image, portrait, logo, printable artwork or cover design.</p>
         <p className="small"><Link href="/image-size/youtube-thumbnail-safe-zone/">Check a YouTube thumbnail</Link> or <Link href="/image-size/cm-to-pixels/">convert print dimensions to pixels</Link> after choosing the ratio.</p>
+      </section>
+      <section className="card stack">
+        <h2>Image ratio calculator tasks</h2>
+        <p>Use the calculator differently depending on whether you are identifying an existing image, resizing it, or deciding how it should fit a target frame.</p>
+        <table>
+          <thead><tr><th>Task</th><th>Input to use</th><th>Result to copy</th></tr></thead>
+          <tbody>
+            {aspectRatioTasks.map((item) => <tr key={item.task}><td><strong>{item.task}</strong></td><td>{item.input}</td><td>{item.result}</td></tr>)}
+          </tbody>
+        </table>
+      </section>
+      <section className="card stack">
+        <h2>Aspect ratio formula examples</h2>
+        <p>The simplified ratio is width divided by the greatest common divisor, followed by height divided by the same number. This keeps the proportion exact while making the ratio readable.</p>
+        <table>
+          <thead><tr><th>Pixels</th><th>GCD</th><th>Ratio</th><th>Common use</th></tr></thead>
+          <tbody>
+            {aspectRatioFormulaExamples.map((item) => <tr key={item.input}><td>{item.input}</td><td>{item.gcd}</td><td><strong>{item.ratio}</strong></td><td>{item.use}</td></tr>)}
+          </tbody>
+        </table>
+        <p>If a requested target ratio changes the image shape, do not stretch the file. Crop when edge loss is acceptable, or add padding when the full artwork, face, logo, product, or printable design must stay visible.</p>
       </section>
     </>
   );
